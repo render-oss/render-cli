@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: sveltekit
+    env: nerd
+    buildCommand: 42
+    startCommand: 106

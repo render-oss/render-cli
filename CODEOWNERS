@@ -1,0 +1,11 @@
+*                   @growth
+
+.editorconfig       ed@render.com
+.gitignore          ed@render.com
+.tool-versions      ed@render.com
+CODEOWNERS          ed@render.com
+deno.json           ed@render.com
+deps-lock.json      ed@render.com
+import_map.json     ed@render.com
+deps.ts             ed@render.com
+.github/**/*        ed@render.com
