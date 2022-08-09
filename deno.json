@@ -1,4 +1,7 @@
 {
   "importMap": "import_map.json",
-  "lock": "deps-lock.json"
+  "lock": "deps-lock.json",
+  "tasks": {
+    "run": "deno run --unstable --allow-read --allow-run --allow-write --allow-env -- entry-point.ts"
+  }
 }
