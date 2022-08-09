@@ -1,9 +1,9 @@
 import { Ajv, AjvFormats, Log } from "../deps.ts";
 
-// deno-lint-ignore no-explicit-any
+// @ts-ignore esm.sh compile weirdness; typecheck is correct.
 export const ajv = AjvFormats(new Ajv({
   allErrors: true,
-}) as any, [
+}), [
   'date-time',
   'time',
   'date',

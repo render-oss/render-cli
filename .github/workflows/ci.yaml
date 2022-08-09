@@ -17,13 +17,13 @@ jobs:
       - name: caching deps
         run: deno cache --lock=deps-lock.json deps.ts
       - name: compiling executable for x86_64-unknown-linux-gnu
-        run: deno compile --allow-read --allow-run --allow-write --allow-env --target=x86_64-unknown-linux-gnu --output=/tmp/render-linux-x86_64 ./entry-point.ts
+        run: deno compile --unstable --allow-read --allow-run --allow-write --allow-env --target=x86_64-unknown-linux-gnu --output=/tmp/render-linux-x86_64 ./entry-point.ts
       - name: compiling executable for x86_64-apple-darwin
-        run: deno compile --allow-read --allow-run --allow-write --allow-env --target=x86_64-apple-darwin --output=/tmp/render-macos-x86_64 ./entry-point.ts 
+        run: deno compile --unstable --allow-read --allow-run --allow-write --allow-env --target=x86_64-apple-darwin --output=/tmp/render-macos-x86_64 ./entry-point.ts 
       - name: compiling executable for aarch64-apple-darwin
-        run: deno compile --allow-read --allow-run --allow-write --allow-env --target=aarch64-apple-darwin --output=/tmp/render-macos-aarch64 ./entry-point.ts
+        run: deno compile --unstable --allow-read --allow-run --allow-write --allow-env --target=aarch64-apple-darwin --output=/tmp/render-macos-aarch64 ./entry-point.ts
       - name: compiling executable for x86_64-pc-windows-msvc
-        run: deno compile --allow-read --allow-run --allow-write --allow-env --target=x86_64-pc-windows-msvc --output=/tmp/render-windows-x86_64 ./entry-point.ts
+        run: deno compile --unstable --allow-read --allow-run --allow-write --allow-env --target=x86_64-pc-windows-msvc --output=/tmp/render-windows-x86_64 ./entry-point.ts
       - name: setting chmod
         run: chmod +x /tmp/render-*
       - name: uploading artifacts (all)

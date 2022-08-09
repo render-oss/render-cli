@@ -16,7 +16,7 @@ export const ROOT_COMMAND =
       }
     })
     .globalOption("--non-interactive", "Forces Render to act as though it's not in a TTY.", {
-      action: function() {
+      action: () => {
         nonInteractive();
       }
     })

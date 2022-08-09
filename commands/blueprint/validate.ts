@@ -1,9 +1,9 @@
 import { Path } from "../../deps.ts";
 
 import { validateSchema } from "../../blueprints/validator.ts";
-import { getLogger, NON_INTERACTIVE } from "../../util/logging.ts";
 import { logAjvErrors } from "../../util/ajv.ts";
-import { handleErrors, Subcommand } from "../_helpers.ts";
+import { standardAction, Subcommand } from "../_helpers.ts";
+import { CLINotFound } from "../errors.ts";
 
 const desc = 
 `Validates a Render Blueprint (render.yaml).
@@ -14,30 +14,35 @@ export const blueprintValidateCommand =
   new Subcommand()
     .description(desc)
     .arguments("[filename:string]")
-    .action(async (_opts, filename = './render.yaml') => {
-      const logger = await getLogger();
-      const path = Path.resolve(filename);
+    .action((_opts, filename = './render.yaml') => 
+      standardAction({
+        processing: (logger) => {
+          const path = Path.resolve(filename);
 
-      logger.debug(`Validating '${path}'.`);
+          logger.debug(`Validating '${path}'.`);
 
-      try {
-        const ret = await validateSchema({ path });
+          try {
+            return validateSchema({ path });
+          } catch (err) {
+            if (err instanceof Deno.errors.NotFound) {
+              throw new CLINotFound(path, err);
+            }
 
-        if (!ret[0]) {
-          const errors = ret[1];
-          if (NON_INTERACTIVE) {
-            console.log(JSON.stringify(errors, null, 2));
-          } else {
-            logAjvErrors(logger, errors);
+            throw err;
           }
-
-          Deno.exit(1);
-        }
-        
-        logger.info("Schema validates correctly.");
-        Deno.exit(0);
-      } catch (err) {
-        await handleErrors({ path }, err);
-        Deno.exit(2);
-      }
-    });
+        },
+        interactive: (result, logger) => {
+          if (result[0]) {
+            logger.info("Schema validates correctly.");
+          } else {
+            logAjvErrors(logger, result[1]);
+          }
+        },
+        nonInteractive: (result, _logger) => {
+          if (!result) {
+            console.log(JSON.stringify(result[1], null, 2));
+          }
+        },
+        exitCode: (result) => result[0] ? 0 : 1,
+      })
+    );
