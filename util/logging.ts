@@ -2,6 +2,7 @@ import { Log } from '../deps.ts';
 
 let isLoggingSetup = false;
 let LOG_VERBOSITY: 'INFO' | 'DEBUG' = 'INFO';
+let PRETTY_JSON = false;
 export let NON_INTERACTIVE = !Deno.isatty(Deno.stdout.rid);
 
 export function verboseLogging() {
@@ -20,6 +21,14 @@ export function nonInteractive() {
   NON_INTERACTIVE = true;
 }
 
+export function prettyJson() {
+  if (isLoggingSetup) {
+    Log.getLogger().warning("`prettyJson` called after logging setup.");
+  }
+
+  PRETTY_JSON = true;
+}
+
 
 export type SetupLoggingArgs = {
   nonInteractive?: boolean,
@@ -30,7 +39,7 @@ class StderrHandler extends Log.handlers.ConsoleHandler {
   private readonly encoder = new TextEncoder();
 
   override log(msg: string): void {
-    Deno.stderr.write(this.encoder.encode(msg));
+    Deno.stderr.writeSync(this.encoder.encode(msg + "\n"));
   }
 }
 
@@ -66,3 +75,10 @@ export async function getLogger(name?: string) {
 }
 
 
+export function json(obj: unknown): string {
+  return (
+    PRETTY_JSON
+      ? JSON.stringify(obj, null, 2)
+      : JSON.stringify(obj)
+  );
+}

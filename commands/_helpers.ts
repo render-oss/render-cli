@@ -9,6 +9,7 @@ const { Command } = Cliffy;
 export type GlobalOptions = {
   verbose?: true; // this is a load-bearing 'true'
   nonInteractive?: true; // ditto
+  prettyJson?: true;
   profile?: string; 
   region?: string;
 }
@@ -27,7 +28,7 @@ export type ErrorContext = {
 
 export function printErrors(logger: Log.Logger, err: unknown) {
   if (err instanceof Deno.errors.NotFound) {
-    logger.error(`Path not found or unreadable, but we should be giving you a better error. Please file an issue so we can help.`, err);
+    logger.error(`Path not found or unreadable, but we should be giving you a better error for '${err?.constructor?.name ?? 'CLASS_NAME_NOT_FOUND'}'. Please file an issue so we can help.`, err);
   } else if (err instanceof CLINotFound) {
     logger.error(err.message);
   } else {
@@ -109,16 +110,17 @@ export function standardAction<T = never>(
         logger.debug("Performing processing.");
         const result = await args.processing(logger);
 
-        if (!NON_INTERACTIVE) {
-          logger.debug("Performing interactive rendering.");
-          args.interactive(result, logger);
-        } else {
+        if (NON_INTERACTIVE) {
+          logger.debug("Performing non-interactive rendering.");
+
           if (!args.nonInteractive) {
             throw new Error("firewall: got to non-interactive rendering of an action with no non-interactive renderer; should have bailed earlier?");
           }
 
-          logger.debug("Performing non-interactive rendering.");
           args.nonInteractive(result, logger);
+        } else {
+          logger.debug("Performing interactive rendering.");
+          args.interactive(result, logger);
         }
 
         Deno.exit(args.exitCode(result));

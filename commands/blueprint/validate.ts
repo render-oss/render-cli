@@ -4,6 +4,7 @@ import { validateSchema } from "../../blueprints/validator.ts";
 import { logAjvErrors } from "../../util/ajv.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 import { CLINotFound } from "../errors.ts";
+import { json } from "../../util/logging.ts";
 
 const desc = 
 `Validates a Render Blueprint (render.yaml).
@@ -16,13 +17,16 @@ export const blueprintValidateCommand =
     .arguments("[filename:string]")
     .action((_opts, filename = './render.yaml') => 
       standardAction({
-        processing: (logger) => {
+        processing: async (logger) => {
           const path = Path.resolve(filename);
-
           logger.debug(`Validating '${path}'.`);
 
           try {
-            return validateSchema({ path });
+            const ret = await validateSchema({ path });
+
+            // required; we want to catch and rethrow for better info
+            logger.debug("Validation complete. Success:", !!ret);
+            return ret;
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
               throw new CLINotFound(path, err);
@@ -35,12 +39,12 @@ export const blueprintValidateCommand =
           if (result[0]) {
             logger.info("Schema validates correctly.");
           } else {
-            logAjvErrors(logger, result[1]);
+            logAjvErrors(logger, result[1].jsonSchema);
           }
         },
         nonInteractive: (result, _logger) => {
-          if (!result) {
-            console.log(JSON.stringify(result[1], null, 2));
+          if (!result[0]) {
+            console.log(json(result[1]));
           }
         },
         exitCode: (result) => result[0] ? 0 : 1,

@@ -9,12 +9,17 @@ export type ValidateSchemaArgs =
   | { content: string }
   | { object: unknown }
   ;
-export type JSONSchemaRet =
-  | [false, Array<AjvErrorObject>]
+
+export type ValidateSchemaRetDetails = {
+  jsonSchema?: Array<AjvErrorObject>,
+}
+  
+export type ValidateSchemaRet =
+  | [false, ValidateSchemaRetDetails]
   | [true, null]
   ;
 
-export async function validateSchema(args: ValidateSchemaArgs): Promise<JSONSchemaRet> {
+export async function validateSchema(args: ValidateSchemaArgs): Promise<ValidateSchemaRet> {
   if ('path' in args) {
     const decoder = new TextDecoder();
     const content = decoder.decode(await Deno.readFile(args.path));
@@ -31,5 +36,5 @@ export async function validateSchema(args: ValidateSchemaArgs): Promise<JSONSche
     return [true, null];
   }
 
-  return [false, ajv.errors ?? []];
+  return [false, { jsonSchema: ajv.errors ?? [] }];
 }
