@@ -1,8 +1,10 @@
 import { Cliffy } from '../deps.ts';
+
 import { nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
 import { VERSION } from "../version.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
 import { newCommand } from "./new/index.ts";
+import { regionsCommand } from "./regions.ts";
 
 
 export const ROOT_COMMAND =
@@ -27,5 +29,6 @@ export const ROOT_COMMAND =
     })
     .command("new", newCommand)
     .command("blueprint", blueprintCommand)
+    .command("regions", regionsCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;
