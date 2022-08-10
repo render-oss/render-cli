@@ -3,8 +3,10 @@ import { Cliffy } from '../deps.ts';
 import { nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
 import { VERSION } from "../version.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
+import { commandsCommand } from "./commands.ts";
 import { newCommand } from "./new/index.ts";
 import { regionsCommand } from "./regions.ts";
+import { sshCommand } from "./ssh.ts";
 
 
 export const ROOT_COMMAND =
@@ -27,8 +29,10 @@ export const ROOT_COMMAND =
       this.showHelp();
       Deno.exit(1);
     })
+    .command("commands", commandsCommand)
     .command("new", newCommand)
     .command("blueprint", blueprintCommand)
     .command("regions", regionsCommand)
+    .command("ssh", sshCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;

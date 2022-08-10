@@ -15,6 +15,6 @@ export const newCommand =
       this.showHelp();
       Deno.exit(1);
     })
-    .command("project", newProjectCommand)
-    .command("blueprint", newBlueprintCommand)
+    // .command("project", newProjectCommand)
+    // .command("blueprint", newBlueprintCommand)
     ;

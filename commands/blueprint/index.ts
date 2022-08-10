@@ -6,7 +6,7 @@ const desc =
 
 export const blueprintCommand =
   new Subcommand()
-    .name("new")
+    .name("blueprint")
     .description(desc)
     .action(function() {
       this.showHelp();

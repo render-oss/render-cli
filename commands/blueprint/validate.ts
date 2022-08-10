@@ -4,7 +4,7 @@ import { validateSchema } from "../../blueprints/validator.ts";
 import { logAjvErrors } from "../../util/ajv.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 import { CLINotFound } from "../errors.ts";
-import { json } from "../../util/logging.ts";
+import { renderJson } from "../../util/logging.ts";
 
 const desc = 
 `Validates a Render Blueprint (render.yaml).
@@ -13,6 +13,7 @@ Currently this only does a JSON schema validation pass over the specified docume
 
 export const blueprintValidateCommand =
   new Subcommand()
+    .name('validate')
     .description(desc)
     .arguments("[filename:string]")
     .action((_opts, filename = './render.yaml') => 
@@ -44,7 +45,7 @@ export const blueprintValidateCommand =
         },
         nonInteractive: (result, _logger) => {
           if (!result[0]) {
-            console.log(json(result[1]));
+            console.log(renderJson(result[1]));
           }
         },
         exitCode: (result) => result[0] ? 0 : 1,

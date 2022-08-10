@@ -75,7 +75,7 @@ export async function getLogger(name?: string) {
 }
 
 
-export function json(obj: unknown): string {
+export function renderJson(obj: unknown): string {
   return (
     PRETTY_JSON
       ? JSON.stringify(obj, null, 2)

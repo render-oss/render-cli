@@ -20,6 +20,7 @@ If \`user\` is not provided, \`render-examples\` is assumed. If no source prefix
 
 export const newProjectCommand =
   new Subcommand()
+    .name('project')
     .description(desc)
     .arguments<[string]>("<identifier:string>")
     .action((_opts, _identifier) => {

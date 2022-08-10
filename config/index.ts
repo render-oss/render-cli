@@ -2,7 +2,7 @@ import { YAML,  } from "../deps.ts";
 import { ajv } from "../util/ajv.ts";
 import { identity } from "../util/fn.ts";
 import { getPaths } from "../util/paths.ts";
-import { Region } from "./types/enums.ts";
+import { ALL_REGIONS, Region } from "./types/enums.ts";
 import { assertValidRegion } from "./types/enums.ts";
 import { ConfigAny, ConfigLatest, ConfigLatestVersion, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
 
@@ -95,4 +95,12 @@ function buildRuntimeProfile(cfg: ConfigLatest): ProfileLatest {
   ret.apiKey = Deno.env.get("RENDERCLI_APIKEY") ?? ret.apiKey;
 
   return ret;
+}
+
+export function validateRegion(s: string): Region {
+  if (!ajv.validate<Region>(Region, s)) {
+    throw new Error(`Invalid region '${s}'. Valid regions: ${ALL_REGIONS.join(' ')}`);
+  }
+
+  return s;
 }

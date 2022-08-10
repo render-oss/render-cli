@@ -8,6 +8,7 @@ NOTE: This list is shipped with a list baked in; in the future we might replace 
 
 export const regionsCommand =
   new Subcommand()
+    .name('regions')
     .description(desc)
     .action(() => {
       for (const region of ALL_REGIONS) {
