@@ -1,4 +1,6 @@
-import { Subcommand } from "../_helpers.ts";
+import { Log } from "../../deps.ts";
+import { templateNewProject } from "../../new/project/index.ts";
+import { standardAction, Subcommand } from "../_helpers.ts";
 
 const desc = 
 `Initializes a new project repository from a template.
@@ -23,6 +25,18 @@ export const newProjectCommand =
     .name('project')
     .description(desc)
     .arguments<[string]>("<identifier:string>")
-    .action((_opts, _identifier) => {
-      throw new Error("TODO");
-    });
+    .option("-o, --output-directory <path>", "target directory for new repo", { required: false })
+    .option("-f, --force", "overwrites existing directory if found.")
+    .option("--skip-cleanup", "skips cleaning up tmpdir (on success or failure)")
+    .action((opts, identifier) =>
+      standardAction({
+        interactive: async (logger: Log.Logger): Promise<number> => {
+          await templateNewProject({
+            identifier,
+            outputDir: opts.outputDirectory,
+            force: opts.force,
+            skipCleanup: opts.skipCleanup,
+          });
+          return 0;
+        }
+      }));

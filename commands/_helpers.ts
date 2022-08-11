@@ -2,7 +2,7 @@ import { getConfig } from "../config/index.ts";
 import { RuntimeConfiguration } from "../config/types/index.ts";
 import { Cliffy, Log } from '../deps.ts';
 import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
-import { CLINotFound } from "./errors.ts";
+import { RenderCLIError } from "./errors.ts";
 
 const { Command } = Cliffy;
 
@@ -29,10 +29,11 @@ export type ErrorContext = {
 export function printErrors(logger: Log.Logger, err: unknown) {
   if (err instanceof Deno.errors.NotFound) {
     logger.error(`Path not found or unreadable, but we should be giving you a better error for '${err?.constructor?.name ?? 'CLASS_NAME_NOT_FOUND'}'. Please file an issue so we can help.`, err);
-  } else if (err instanceof CLINotFound) {
+  } else if (err instanceof RenderCLIError) {
     logger.error(err.message);
   } else {
-    logger.error(`Unrecognized error:`, err);
+    logger.error("Unrecognized error; dumping to console.error for full trace.");
+    console.error(err);
   }
 }
 

@@ -3,7 +3,7 @@ import { Path } from "../../deps.ts";
 import { validateSchema } from "../../blueprints/validator.ts";
 import { logAjvErrors } from "../../util/ajv.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
-import { CLINotFound } from "../errors.ts";
+import { PathNotFound } from "../errors.ts";
 import { renderJson } from "../../util/logging.ts";
 
 const desc = 
@@ -30,7 +30,7 @@ export const blueprintValidateCommand =
             return ret;
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
-              throw new CLINotFound(path, err);
+              throw new PathNotFound(path, err);
             }
 
             throw err;

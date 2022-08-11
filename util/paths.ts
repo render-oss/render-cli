@@ -16,3 +16,17 @@ export function getPaths(): AppPaths {
     cacheDir: Deno.env.get("RENDERCLI_CACHE_DIR") ?? `${renderDir}/cache`,
   };
 }
+
+
+export async function pathExists(path: string): Promise<boolean> {
+  try {
+    await Deno.stat(path);
+    return true;
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      return false;
+    }
+
+    throw err;
+  }
+}
