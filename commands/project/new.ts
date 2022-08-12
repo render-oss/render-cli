@@ -20,9 +20,9 @@ If \`user\` is not provided, \`render-examples\` is assumed. If no source prefix
 
 (Future TODO: enable \`gitlab:\` prefix, enable arbitrary Git repositories.)`;
 
-export const newProjectCommand =
+export const projectNewCommand =
   new Subcommand()
-    .name('project')
+    .name('new')
     .description(desc)
     .arguments<[string]>("<identifier:string>")
     .option("-o, --output-directory <path>", "target directory for new repo", { required: false })
@@ -30,7 +30,7 @@ export const newProjectCommand =
     .option("--skip-cleanup", "skips cleaning up tmpdir (on success or failure)")
     .action((opts, identifier) =>
       standardAction({
-        interactive: async (logger: Log.Logger): Promise<number> => {
+        interactive: async (_logger: Log.Logger): Promise<number> => {
           await templateNewProject({
             identifier,
             outputDir: opts.outputDirectory,

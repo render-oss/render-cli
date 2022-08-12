@@ -1,4 +1,5 @@
 import { Subcommand } from "../_helpers.ts";
+
 import { blueprintValidateCommand } from "./validate.ts";
 
 const desc = 
@@ -12,5 +13,6 @@ export const blueprintCommand =
       this.showHelp();
       Deno.exit(1);
     })
+    // .command("new", blueprintNewCommand)
     .command("validate", blueprintValidateCommand)
     ;
