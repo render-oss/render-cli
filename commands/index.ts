@@ -4,6 +4,7 @@ import { nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
 import { VERSION } from "../version.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
 import { commandsCommand } from "./commands.ts";
+import { configCommand } from "./config/index.ts";
 import { newCommand } from "./new/index.ts";
 import { regionsCommand } from "./regions.ts";
 import { sshCommand } from "./ssh.ts";
@@ -34,5 +35,6 @@ export const ROOT_COMMAND =
     .command("blueprint", blueprintCommand)
     .command("regions", regionsCommand)
     .command("ssh", sshCommand)
+    .command("config", configCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;

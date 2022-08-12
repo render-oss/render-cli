@@ -49,7 +49,7 @@ export interface InterrogativeAction {
    * 
    * https://cliffy.io/docs/prompt
    */
-  interactive: (logger: Log.Logger) => Promise<number>,
+  interactive: (logger: Log.Logger) => Promise<number> | number,
 }
 
 export interface ProcessingAction<T> {
