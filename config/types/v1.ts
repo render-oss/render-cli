@@ -20,6 +20,9 @@ export const ConfigV1 = Type.Object({
   version: Type.Integer({
     default: 1
   }),
+  sshPreserveHosts: Type.Optional(Type.Boolean({
+    description: "If true, render-cli will not keep ~/.ssh/known_hosts up to date with current public keys.",
+  })),
   profiles: Type.Record(Type.String(), ProfileV1),
 });
 export type ConfigV1 = Static<typeof ConfigV1>;

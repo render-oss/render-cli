@@ -1,6 +1,7 @@
 export type AppPaths = {
   configFile: string,
   cacheDir: string,
+  sshDir: string,
 };
 
 export function getPaths(): AppPaths {
@@ -14,6 +15,7 @@ export function getPaths(): AppPaths {
   return {
     configFile: Deno.env.get("RENDERCLI_CONFIG_FILE") ?? `${renderDir}/config.yaml`,
     cacheDir: Deno.env.get("RENDERCLI_CACHE_DIR") ?? `${renderDir}/cache`,
+    sshDir: Deno.env.get("RENDERCLI_SSH_DIR") ?? `${defaultHome}/.ssh`,
   };
 }
 

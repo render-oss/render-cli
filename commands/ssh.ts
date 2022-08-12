@@ -16,11 +16,17 @@ export const sshCommand =
     .description(desc)
     .arguments("<serviceId:string> [sshArgs...]")
     .stopEarly() // args after the service name will not be parsed, including flags
+    .option("--preserve-hosts", "Do not update ~/.ssh/known_hosts with Render public keys.")
     .action(async (opts, serviceName, sshArgs) => {
       const logger = await getLogger();
       const config = await getConfig();
 
-      const status = await runSSH(serviceName, validateRegion(opts.region ?? config.profile.defaultRegion), sshArgs);
+      const status = await runSSH({
+        serviceName, 
+        region: validateRegion(opts.region ?? config.profile.defaultRegion),
+        sshArgs: sshArgs ?? [],
+        noHosts: opts.preserveHosts ?? config.fullConfig.sshPreserveHosts ?? false,
+      });
       
       if (!status.success) {
         logger.error(`Underlying SSH failure: exit code ${status.code}, signal ${status.signal ?? 'none'}`);

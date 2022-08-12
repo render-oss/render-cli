@@ -6,17 +6,26 @@ const RENDER_CLI_SUBCOMMAND_ENV = {
   IS_RENDERCLI_SUBCOMMAND: "1",
 };
 
-export async function runSSH(serviceName: string, region: Region, sshArgs: Array<string> = []): Promise<Deno.ProcessStatus> {
+export type RunSSHArgs = {
+  serviceName: string;
+  region: Region;
+  sshArgs: Array<string>;
+  noHosts?: boolean;
+}
+
+export async function runSSH(args: RunSSHArgs): Promise<Deno.ProcessStatus> {
   const logger = await getLogger();
 
   logger.debug("Updating known hosts before invoking.");
-  await updateKnownHosts(); // TODO: this probably should figure out custom known-hosts locations
+  if (!args.noHosts) {
+    await updateKnownHosts();
+  }
 
-  const sshTarget = `${serviceName}@ssh.${region}.render.com`;
+  const sshTarget = `${args.serviceName}@ssh.${args.region}.render.com`;
 
   logger.debug(`SSH target: ${sshTarget}`);
 
-  const cmd = ['ssh', sshTarget, ...sshArgs];
+  const cmd = ['ssh', sshTarget, ...args.sshArgs];
   logger.debug(`Deno.run args: ${JSON.stringify(cmd)}`);
 
   const process = Deno.run({
