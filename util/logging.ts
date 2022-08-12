@@ -1,4 +1,5 @@
 import { Log } from '../deps.ts';
+import { VERSION } from '../version.ts';
 
 let isLoggingSetup = false;
 let LOG_VERBOSITY: 'INFO' | 'DEBUG' = 'INFO';
@@ -63,6 +64,10 @@ async function setupLogging() {
     });
 
     isLoggingSetup = true;
+  }
+
+  if (VERSION.startsWith("0")) {
+    (await getLogger()).warning(`render-cli is still pre-1.0.0 and as such all functionality should be considered subject to change.`);
   }
 }
 
