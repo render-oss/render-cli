@@ -11,7 +11,7 @@ import * as _Cliffy from "https://deno.land/x/cliffy@v0.24.3/mod.ts";
 export const Cliffy = _Cliffy;
 
 
-export { default as stripIndent } from "https://esm.sh/strip-indent@4.0.0";
+export { default as stripIndent } from "https://esm.sh/v86/strip-indent@4.0.0";
 export { default as YAML } from "https://esm.sh/v86/js-yaml@4.1.0";
 export { default as pipe } from "https://deno.land/x/froebel@v0.20.0/pipe.ts";
 
