@@ -1,4 +1,5 @@
-import { Log } from "../../deps.ts";
+import { sleep } from "https://deno.land/x/sleep@v1.2.1/sleep.ts";
+import { Log, openAWebsite } from "../../deps.ts";
 import { gitUrlToHttpsUrl, listRemotes } from "../../util/git.ts";
 import { RenderCLIError } from "../errors.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
@@ -15,6 +16,7 @@ export const deployNewCommand =
     .name('new')
     .description(desc)
     .option("-l, --link", "Prints out the Render Deploy URL rather than attempting to open it.")
+    .option("-r, --remote <remoteName:string>", "The remote to use")
     .arguments<[string]>("[path:string]")
     .action((opts, path) => standardAction({
       processing: async () => {
@@ -22,11 +24,12 @@ export const deployNewCommand =
         if (path) {
           httpsGitUrl = gitUrlToHttpsUrl(path);
         } else {
-          const remote = await listRemotes({ https: true });
+          const originName = opts.remote ?? 'origin';
+          const remotes = await listRemotes({ https: true });
 
-          const originUrl = remote.origin;
+          const originUrl = remotes[originName];
           if (!originUrl) {
-            throw new RenderCLIError("Could not find an origin upstream for this repo.");
+            throw new RenderCLIError(`Could not find an '${originName}' upstream for this repo. Upstreams found: ${Object.keys(remotes).join(', ')}`);
           }
           httpsGitUrl = originUrl;
         }
@@ -36,6 +39,15 @@ export const deployNewCommand =
       interactive: async (httpsGitUrl: string, logger: Log.Logger) => {
         if (opts.link) {
           console.log(httpsGitUrl);
+        } else {
+          logger.info(`Taking you to the deploy page: ${httpsGitUrl}`);
+          await sleep(1);
+          
+          const p = await openAWebsite(httpsGitUrl);
+
+          if (!(await p.status()).success) {
+            logger.error(`Could not automatically open browser. Please navigate to this URL directly: ${httpsGitUrl}`); 
+          }
         }
       },
       nonInteractive: (httpsGitUrl: string) => {

@@ -1,3 +1,5 @@
+// no good deno git library yet. :(
+
 export async function listRemotes(args: { cwd?: string, https?: boolean }): Promise<Record<string, string>> {
   const process = await Deno.run({
     cmd: ['git', 'remote', '-v'],
@@ -7,21 +9,21 @@ export async function listRemotes(args: { cwd?: string, https?: boolean }): Prom
   });
 
   const decoder = new TextDecoder();
-  const lines = decoder.decode(await process.output()).split("\n");
+  const lines =
+    decoder.decode(await process.output())
+      .split("\n").map(i => i.trim());
 
   const ret: Record<string, string> = {};
 
-  for (const line of lines) {
-    console.log("> ", line)
-    const [name, ...rest] = line.split(" ").map(s => s.trim());
-    console.log(rest);
-    const url = rest[0];
+  lines.forEach(line => {
+    const [name, url] = line.split(/[\ \t]/).filter(i => i);
+    
+    if (!name || !url) {
+      return;
+    }
 
-    ret[name] =
-      args.https
-        ? gitUrlToHttpsUrl(url)
-        : url;
-  }
+    ret[name] = gitUrlToHttpsUrl(url);
+  });
 
   return ret;
 }

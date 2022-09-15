@@ -64,7 +64,7 @@ export interface ProcessingAction<T> {
    * not tabular be printed via `logger`, and tabular content to be printed via Cliffy's
    * `table` facility. https://cliffy.io/docs/table
    */
-  interactive: (result: T, logger: Log.Logger) => void;
+  interactive: (result: T, logger: Log.Logger) => void | Promise<void>;
   
   /**
    * The non-interactive formatter for this action. If this is not set, the CLI will
@@ -75,7 +75,7 @@ export interface ProcessingAction<T> {
    * intended to be consumed (e.g., piped to another application) MUST be passed ONLY
    * to `console.log`.
    */
-  nonInteractive?: (result: T, logger: Log.Logger) => void;
+  nonInteractive?: (result: T, logger: Log.Logger) => void | Promise<void>;
 
   /**
    * Unifies return code logic. After either interactive() or nonInteractive() are called,
@@ -118,10 +118,10 @@ export function standardAction<T = never>(
             throw new Error("firewall: got to non-interactive rendering of an action with no non-interactive renderer; should have bailed earlier?");
           }
 
-          args.nonInteractive(result, logger);
+          await args.nonInteractive(result, logger);
         } else {
           logger.debug("Performing interactive rendering.");
-          args.interactive(result, logger);
+          await args.interactive(result, logger);
         }
 
         Deno.exit(args.exitCode(result));
