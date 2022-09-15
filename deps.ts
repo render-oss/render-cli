@@ -14,6 +14,8 @@ export const Cliffy = _Cliffy;
 export { default as stripIndent } from "https://esm.sh/v86/strip-indent@4.0.0";
 export { default as YAML } from "https://esm.sh/v86/js-yaml@4.1.0";
 export { default as pipe } from "https://deno.land/x/froebel@v0.20.0/pipe.ts";
+export { openAWebsite } from "https://deno.land/x/open_a_website@0.1.1/mod.ts";
+
 
 export { isURL } from "https://deno.land/x/is_url/mod.ts";
 export { sleep } from "https://deno.land/x/sleep@v1.2.1/mod.ts";

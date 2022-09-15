@@ -5,6 +5,7 @@ import { VERSION } from "../version.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
 import { commandsCommand } from "./commands.ts";
 import { configCommand } from "./config/index.ts";
+import { deployCommand } from "./deploy/index.ts";
 import { projectsCommand } from './project/index.ts';
 import { regionsCommand } from "./regions.ts";
 import { sshCommand } from "./ssh.ts";
@@ -35,6 +36,7 @@ export const ROOT_COMMAND =
     .command("regions", regionsCommand)
     .command("project", projectsCommand)
     .command("blueprint", blueprintCommand)
+    .command("deploy", deployCommand)
     .command("ssh", sshCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;
