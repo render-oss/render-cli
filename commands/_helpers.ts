@@ -26,6 +26,8 @@ export type ErrorContext = {
   path?: string,
 }
 
+export type ExitCodeRet = boolean | number | null | undefined | Array<unknown>;
+
 export function printErrors(logger: Log.Logger, err: unknown) {
   if (err instanceof Deno.errors.NotFound) {
     logger.error(`Path not found or unreadable, but we should be giving you a better error for '${err?.constructor?.name ?? 'CLASS_NAME_NOT_FOUND'}'. Please file an issue so we can help.`, err);
@@ -80,8 +82,12 @@ export interface ProcessingAction<T> {
   /**
    * Unifies return code logic. After either interactive() or nonInteractive() are called,
    * this will return the exit code for the command.
+   * 
+   * If you return `true` or an array that is not empty, the return code will be 0. If you
+   * return `false`, `null`, or `undefined`, the return code will be 1. If you return a
+   * number, the exit code will be that number.
    */
-  exitCode: (result: T) => number;
+  exitCode: (result: T) => ExitCodeRet;
 }
 
 
@@ -89,6 +95,17 @@ export type StandardActionArgs<T> =
   | InterrogativeAction
   | ProcessingAction<T>
   ;
+
+function computeExitCode(exitResult: ExitCodeRet): number {
+  if (Array.isArray(exitResult)) {
+    return exitResult.length > 0 ? 0 : 1;
+  }
+  if (typeof(exitResult) === 'number') {
+    return exitResult;
+  }
+
+  return exitResult ? 0 : 1;
+}
 
 export function standardAction<T = never>(
   args: StandardActionArgs<T>,
@@ -124,7 +141,8 @@ export function standardAction<T = never>(
           await args.interactive(result, logger);
         }
 
-        Deno.exit(args.exitCode(result));
+        const exitResult = args.exitCode(result);
+        Deno.exit(computeExitCode(exitResult));
       }
     } catch (err) {
       printErrors(logger, err);
