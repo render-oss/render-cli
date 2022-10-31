@@ -26,8 +26,6 @@ export type ErrorContext = {
   path?: string,
 }
 
-export type ExitCodeRet = boolean | number | null | undefined | Array<unknown>;
-
 export function printErrors(logger: Log.Logger, err: unknown) {
   if (err instanceof Deno.errors.NotFound) {
     logger.error(`Path not found or unreadable, but we should be giving you a better error for '${err?.constructor?.name ?? 'CLASS_NAME_NOT_FOUND'}'. Please file an issue so we can help.`, err);
@@ -87,7 +85,7 @@ export interface ProcessingAction<T> {
    * return `false`, `null`, or `undefined`, the return code will be 1. If you return a
    * number, the exit code will be that number.
    */
-  exitCode: (result: T) => ExitCodeRet;
+  exitCode: (result: T) => unknown;
 }
 
 
@@ -96,7 +94,7 @@ export type StandardActionArgs<T> =
   | ProcessingAction<T>
   ;
 
-function computeExitCode(exitResult: ExitCodeRet): number {
+function computeExitCode(exitResult: unknown): number {
   if (Array.isArray(exitResult)) {
     return exitResult.length > 0 ? 0 : 1;
   }
