@@ -78,7 +78,7 @@ you can add more buildpacks later with \`render buildpack add\`!
                 },
               ]);
 
-              if (bpUrl === '') {
+              if (!bpUrl || bpUrl === '') {
                 break;
               }
 
