@@ -3,6 +3,7 @@ import { Cliffy } from '../deps.ts';
 import { nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
 import { VERSION } from "../version.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
+import { buildpackCommand } from './buildpack/index.ts';
 import { commandsCommand } from "./commands.ts";
 import { configCommand } from "./config/index.ts";
 import { deployCommand } from "./deploy/index.ts";
@@ -36,6 +37,7 @@ export const ROOT_COMMAND =
     .command("regions", regionsCommand)
     .command("project", projectsCommand)
     .command("blueprint", blueprintCommand)
+    .command("buildpack", buildpackCommand)
     .command("deploy", deployCommand)
     .command("ssh", sshCommand)
     .command("completions", new Cliffy.CompletionsCommand())

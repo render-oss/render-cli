@@ -14,10 +14,10 @@ export const sshCommand =
   new Subcommand()
     .name('ssh')
     .description(desc)
-    .arguments("<serviceId:string> [sshArgs...]")
+    .arguments("<serviceId:string> [sshArgs...:string]")
     .stopEarly() // args after the service name will not be parsed, including flags
     .option("--preserve-hosts", "Do not update ~/.ssh/known_hosts with Render public keys.")
-    .action(async (opts, serviceName, sshArgs) => {
+    .action(async (opts, serviceName, ...sshArgs) => {
       const logger = await getLogger();
       const config = await getConfig();
 

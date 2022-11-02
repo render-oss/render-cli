@@ -3,7 +3,7 @@ import { Path } from "../../deps.ts";
 import { validateSchema } from "../../blueprints/validator.ts";
 import { logAjvErrors } from "../../util/ajv.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
-import { PathNotFound } from "../errors.ts";
+import { PathNotFound } from "../../errors.ts";
 import { renderJson } from "../../util/logging.ts";
 
 const desc = 

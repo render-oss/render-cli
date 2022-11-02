@@ -1,7 +1,7 @@
 import { sleep } from "https://deno.land/x/sleep@v1.2.1/sleep.ts";
 import { Log, openAWebsite } from "../../deps.ts";
 import { gitUrlToHttpsUrl, listRemotes } from "../../util/git.ts";
-import { RenderCLIError } from "../errors.ts";
+import { RenderCLIError } from "../../errors.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 
 const desc = 

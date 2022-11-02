@@ -7,9 +7,8 @@ export { Type, type Static } from "https://deno.land/x/typebox@0.24.27/src/typeb
 export { default as Ajv, type ErrorObject as AjvErrorObject } from "https://esm.sh/v86/ajv@8.11.0";
 export { default as AjvFormats } from "https://esm.sh/v86/ajv-formats@2.1.1";
 
-import * as _Cliffy from "https://deno.land/x/cliffy@v0.24.3/mod.ts";
+import * as _Cliffy from "https://deno.land/x/cliffy@v0.25.4/mod.ts";
 export const Cliffy = _Cliffy;
-
 
 export { default as stripIndent } from "https://esm.sh/v86/strip-indent@4.0.0";
 export { default as YAML } from "https://esm.sh/v86/js-yaml@4.1.0";

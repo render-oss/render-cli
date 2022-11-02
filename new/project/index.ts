@@ -1,4 +1,4 @@
-import { ForceRequiredError, RepoNotFound } from "../../commands/errors.ts";
+import { ForceRequiredError, RepoNotFound } from "../../errors.ts";
 import { Cliffy, Path, FS, download, tgz } from "../../deps.ts";
 import { identity } from "../../util/fn.ts";
 import { unwrapAsyncIterator } from "../../util/iter.ts";

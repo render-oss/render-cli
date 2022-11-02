@@ -6,7 +6,7 @@ const desc =
 
 export const projectsCommand =
   new Subcommand()
-    .name("new")
+    .name("project")
     .description(desc)
     .action(function() {
       this.showHelp();

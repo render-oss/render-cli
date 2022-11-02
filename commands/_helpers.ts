@@ -2,9 +2,7 @@ import { getConfig } from "../config/index.ts";
 import { RuntimeConfiguration } from "../config/types/index.ts";
 import { Cliffy, Log } from '../deps.ts';
 import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
-import { RenderCLIError } from "./errors.ts";
-
-const { Command } = Cliffy;
+import { RenderCLIError } from "../errors.ts";
 
 export type GlobalOptions = {
   verbose?: true; // this is a load-bearing 'true'
@@ -14,7 +12,7 @@ export type GlobalOptions = {
   region?: string;
 }
 
-export const Subcommand = Command<GlobalOptions>;
+export const Subcommand = Cliffy.Command<GlobalOptions>;
 
 export async function withConfig(fn: (cfg: RuntimeConfiguration) => Promise<void>) {
   const config = await getConfig();
@@ -57,7 +55,7 @@ export interface ProcessingAction<T> {
    * Shared code between interactive and non-interactive modes. Whatever is returned from
    * this function will be passed to `interactive` or `nonInteractive`, respectively.
    */
-  processing: (logger: Log.Logger) => T | Promise<T>;
+  processing: (logger: Log.Logger, isNonInteractive: boolean) => T | Promise<T>;
 
   /**
    * The interactive formatter for this action. It's expected that all output that is
@@ -124,7 +122,7 @@ export function standardAction<T = never>(
         await args.interactive(logger);
       } else {
         logger.debug("Performing processing.");
-        const result = await args.processing(logger);
+        const result = await args.processing(logger, NON_INTERACTIVE);
 
         if (NON_INTERACTIVE) {
           logger.debug("Performing non-interactive rendering.");
