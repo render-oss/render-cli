@@ -37,7 +37,7 @@ export const ROOT_COMMAND =
     .command("config", configCommand)
     .command("regions", regionsCommand)
     .command("project", projectsCommand)
-    .command("blueprint", blueprintCommand)
+    // .command("blueprint", blueprintCommand)
     .command("buildpack", buildpackCommand)
     .command("deploy", deployCommand)
     .command("ssh", sshCommand)
