@@ -1,4 +1,4 @@
-import { RenderCLIError } from "../commands/errors.ts";
+import { RenderCLIError } from "../errors.ts";
 
 export async function simpleRun(cmd: Array<string>, msgOnFail?: string): Promise<string> {
     const process = Deno.run({

@@ -12,14 +12,13 @@ export type APIKeyV1 = Static<typeof APIKeyV1>;
 
 export const ProfileV1 = Type.Object({
   apiKey: Type.Optional(APIKeyV1),
+  apiHost: Type.Optional(Type.String()),
   defaultRegion: Region,
 });
 export type ProfileV1 = Static<typeof ProfileV1>;
 
 export const ConfigV1 = Type.Object({
-  version: Type.Integer({
-    default: 1
-  }),
+  version: Type.Literal(1),
   sshPreserveHosts: Type.Optional(Type.Boolean({
     description: "If true, render-cli will not keep ~/.ssh/known_hosts up to date with current public keys.",
   })),

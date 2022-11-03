@@ -20,7 +20,7 @@ If \`user\` is not provided, \`render-examples\` is assumed. If no source prefix
 
 (Future TODO: enable \`gitlab:\` prefix, enable arbitrary Git repositories.)`;
 
-export const projectNewCommand =
+export const repoNewCommand =
   new Subcommand()
     .name('new')
     .description(desc)

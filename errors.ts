@@ -1,3 +1,5 @@
+import { RuntimeConfiguration } from "./config/types/index.ts";
+
 export class RenderCLIError extends Error {
 
 }
@@ -22,5 +24,11 @@ export class RepoNotFound extends RenderCLIError {
     name: string,
   ) {
     super(`Repo '${name}' not found.`);
+  }
+}
+
+export class APIKeyRequired extends RenderCLIError {
+  constructor(cfg: RuntimeConfiguration) {
+    super(`Config profile '${cfg.profileName}' does not have an API key set.`);
   }
 }

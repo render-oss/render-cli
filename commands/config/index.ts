@@ -1,4 +1,5 @@
 import { Subcommand } from "../_helpers.ts";
+import { configInitCommand } from "./init.ts";
 import { configSchemaCommand } from "./schema.ts";
 
 const desc = 
@@ -13,4 +14,5 @@ export const configCommand =
       Deno.exit(1);
     })
     .command("schema", configSchemaCommand)
+    .command("init", configInitCommand)
     ;

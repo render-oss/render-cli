@@ -10,9 +10,6 @@ export const ConfigAny = Type.Union([
 export type ConfigLatest = ConfigV1;
 export const ConfigLatest = ConfigV1;
 
-export type ConfigLatestVersion = ConfigLatest['version'];
-export const ConfigLatestVersion = ConfigLatest.properties.version.static;
-
 export type ProfileLatest = ProfileV1;
 export const ProfileLatest = ProfileV1;
 
@@ -20,5 +17,6 @@ export type UpgradeFn<T> = (cfg: T) => ConfigLatest;
 
 export type RuntimeConfiguration = {
   fullConfig: ConfigLatest;
+  profileName: string;
   profile: ProfileLatest;
 }

@@ -2,7 +2,9 @@ import { getConfig } from "../config/index.ts";
 import { RuntimeConfiguration } from "../config/types/index.ts";
 import { Cliffy, Log } from '../deps.ts';
 import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
-import { RenderCLIError } from "../errors.ts";
+import { APIKeyRequired, RenderCLIError } from "../errors.ts";
+
+const { Command } = Cliffy;
 
 export type GlobalOptions = {
   verbose?: true; // this is a load-bearing 'true'
@@ -145,4 +147,16 @@ export function standardAction<T = never>(
       Deno.exit(2);
     }
   })();
+}
+
+export function apiKeyOrThrow(cfg: RuntimeConfiguration): string {
+  if (!cfg.profile.apiKey) {
+    throw new APIKeyRequired(cfg);
+  }
+
+  return cfg.profile.apiKey;
+}
+
+export function apiHost(cfg: RuntimeConfiguration) {
+  return cfg.profile.apiHost ?? "api.render.com";
 }

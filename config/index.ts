@@ -4,12 +4,13 @@ import { identity } from "../util/fn.ts";
 import { getPaths } from "../util/paths.ts";
 import { ALL_REGIONS, Region } from "./types/enums.ts";
 import { assertValidRegion } from "./types/enums.ts";
-import { ConfigAny, ConfigLatest, ConfigLatestVersion, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
+import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
 
 let config: RuntimeConfiguration | null = null;
 
+// TODO: smarten this up with type checks
 const CONFIG_UPGRADE_MAPS = {
-  [ConfigLatestVersion]: identity,
+  1: identity,
 }
 const FALLBACK_PROFILE: ProfileLatest = {
   defaultRegion: 'oregon', // mimics dashboard behavior
@@ -24,16 +25,22 @@ export async function getConfig(): Promise<RuntimeConfiguration> {
   if (config === null) {
     const cfg = await fetchAndParseConfig();
 
-    const profile = buildRuntimeProfile(cfg);
+    const runtimeProfile = buildRuntimeProfile(cfg);
     const ret: RuntimeConfiguration = {
       fullConfig: cfg,
-      profile,
+      ...runtimeProfile,
     }
 
     config = ret;
   }
 
   return config;
+}
+
+export async function withConfig<T>(fn: (cfg: RuntimeConfiguration) => T | Promise<T>): Promise<T> {
+  const cfg = await getConfig();
+
+  return fn(cfg);
 }
 
 function upgradeConfigFile(config: ConfigAny): ConfigLatest {
@@ -78,7 +85,7 @@ async function fetchAndParseConfig(): Promise<ConfigLatest> {
   }
 }
 
-function buildRuntimeProfile(cfg: ConfigLatest): ProfileLatest {
+function buildRuntimeProfile(cfg: ConfigLatest): { profile: ProfileLatest, profileName: string } {
   const profileName = Deno.env.get("RENDERCLI_PROFILE") ?? 'default';
   const profile = cfg.profiles[profileName] ?? {};
 
@@ -93,8 +100,9 @@ function buildRuntimeProfile(cfg: ConfigLatest): ProfileLatest {
   ret.defaultRegion = actualRegion as Region;
 
   ret.apiKey = Deno.env.get("RENDERCLI_APIKEY") ?? ret.apiKey;
+  ret.apiHost = Deno.env.get("RENDERCLI_APIHOST") ?? ret.apiHost;
 
-  return ret;
+  return { profile: ret, profileName };
 }
 
 export function validateRegion(s: string): Region {
