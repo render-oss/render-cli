@@ -17,7 +17,7 @@ export const ROOT_COMMAND =
   (new Cliffy.Command())
     .name("render")
     .version(VERSION)
-    .description("The CLI for the easiest cloud platform you'll ever use.")
+    .description("The CLI for the easiest cloud platform you'll ever use.\n\nType `render config init` to get started.")
     .globalOption("-v, --verbose", "Makes render-cli a lot more chatty.", {
       action: () => verboseLogging(),
     })
