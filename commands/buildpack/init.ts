@@ -22,8 +22,8 @@ export const buildpackInitCommand =
     .option("-f, --force", "overwrites existing files if found.")
     .option("--dir <string>", "the directory in which to run this command")
     .option("--skip-dockerfile", "don't emit a Dockerfile")
-    .option("-b, --buildpack <string>", "specifies a buildpack (otherwise will ask)", { collect: true })
-    .action((opts) => standardAction({
+    .arguments("[buildpacks...:string]")
+    .action((opts, ...buildpacks) => standardAction({
       interactive: async () => {
         const dir = opts.dir ?? '.';
 
@@ -39,9 +39,9 @@ export const buildpackInitCommand =
           }
         }
 
-        const buildpacks: Array<string> = opts.buildpack ?? [];
+        const initialBuildpacks: Array<string> = buildpacks ?? [];
 
-        if (buildpacks.length === 0) {
+        if (initialBuildpacks.length === 0) {
           const resp1 = await Cliffy.prompt([
             {
               name: "buildpacks",
@@ -54,7 +54,7 @@ export const buildpackInitCommand =
             }
           ]);
 
-          buildpacks.push(...(resp1.buildpacks ?? []).filter(bp => HEROKU_BUILDPACKS.includes(bp)));
+          initialBuildpacks.push(...(resp1.buildpacks ?? []).filter(bp => HEROKU_BUILDPACKS.includes(bp)));
 
           if (resp1.buildpacks?.includes("I need a custom buildpack")) {
             console.log(
@@ -86,19 +86,19 @@ you can add more buildpacks later with \`render buildpack add\`!
                 console.error(`!!! '${bpUrl}' isn't a valid buildpack URL.`);
               } else {
                 console.log(`${bpUrl} added.`);
-                buildpacks.push(bpUrl);
+                initialBuildpacks.push(bpUrl);
               }
             }
           }
         }
 
         (!opts.skipDockerfile) && await initDockerfile(dir, !!opts.force);
-        await initBuildpacksFile(dir, buildpacks, !!opts.force);
+        await initBuildpacksFile(dir, initialBuildpacks, !!opts.force);
 
         console.log(
 `
 
-${buildpacks.length} buildpacks configured. You're good to go!
+${initialBuildpacks.length} buildpacks configured. You're good to go!
 
 We've created the following files for you:
 
