@@ -3,6 +3,7 @@ export * as FS from "https://deno.land/std@0.151.0/fs/mod.ts";
 export * as Log from "https://deno.land/std@0.151.0/log/mod.ts";
 
 export { Type, type Static } from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
+export * as Typebox from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
 
 export { default as Ajv, type ErrorObject as AjvErrorObject } from "https://esm.sh/v86/ajv@8.11.0";
 export { default as AjvFormats } from "https://esm.sh/v86/ajv-formats@2.1.1";
