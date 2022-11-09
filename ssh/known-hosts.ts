@@ -28,10 +28,6 @@ const SSH_SERVER_REGEX = RegExp(
   ")).render.com",
 );
 
-async function modifyKnownHosts(p: string): Promise<void> {
-  
-}
-
 export async function updateKnownHosts(path?: string) {
   // this fn is written as it is because if we don't actually change known_hosts,
   // we don't want to update the one that the user already has (because a change in
