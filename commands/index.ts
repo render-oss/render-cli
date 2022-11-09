@@ -6,7 +6,6 @@ import { blueprintCommand } from "./blueprint/index.ts";
 import { buildpackCommand } from './buildpack/index.ts';
 import { commandsCommand } from "./commands.ts";
 import { configCommand } from "./config/index.ts";
-import { deployCommand } from "./deploy/index.ts";
 import { projectsCommand } from './repo/index.ts';
 import { regionsCommand } from "./regions.ts";
 import { sshCommand } from "./ssh.ts";
@@ -37,9 +36,8 @@ export const ROOT_COMMAND =
     .command("config", configCommand)
     .command("regions", regionsCommand)
     .command("project", projectsCommand)
-    // .command("blueprint", blueprintCommand)
+    .command("blueprint", blueprintCommand)
     .command("buildpack", buildpackCommand)
-    .command("deploy", deployCommand)
     .command("ssh", sshCommand)
     .command("services", servicesCommand)
     .command("completions", new Cliffy.CompletionsCommand())

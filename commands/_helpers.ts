@@ -14,7 +14,7 @@ export type GlobalOptions = {
   region?: string;
 }
 
-export const Subcommand = Cliffy.Command<GlobalOptions>;
+export const Subcommand = Command<GlobalOptions>;
 
 export async function withConfig(fn: (cfg: RuntimeConfiguration) => Promise<void>) {
   const config = await getConfig();

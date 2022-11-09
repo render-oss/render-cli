@@ -1,4 +1,5 @@
 import { Subcommand } from "../_helpers.ts";
+import { blueprintLaunchCommand } from "./launch.ts";
 
 import { blueprintValidateCommand } from "./validate.ts";
 
@@ -14,5 +15,6 @@ export const blueprintCommand =
       Deno.exit(1);
     })
     // .command("new", blueprintNewCommand)
-    .command("validate", blueprintValidateCommand)
+    .command("launch", blueprintLaunchCommand)
+    // .command("validate", blueprintValidateCommand)
     ;

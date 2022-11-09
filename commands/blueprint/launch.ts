@@ -11,7 +11,7 @@ If it can't open your browser, it'll provide you a link instead.
 
 NOTE: This is only tested for GitHub and GitLab HTTPS repos. Git SSH URLs will be converted to HTTPS as best we can.`;
 
-export const deployNewCommand =
+export const blueprintLaunchCommand =
   new Subcommand()
     .name('new')
     .description(desc)
