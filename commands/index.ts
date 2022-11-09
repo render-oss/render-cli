@@ -6,7 +6,7 @@ import { blueprintCommand } from "./blueprint/index.ts";
 import { buildpackCommand } from './buildpack/index.ts';
 import { commandsCommand } from "./commands.ts";
 import { configCommand } from "./config/index.ts";
-import { projectsCommand } from './repo/index.ts';
+import { repoCommand } from './repo/index.ts';
 import { regionsCommand } from "./regions.ts";
 import { sshCommand } from "./ssh.ts";
 import { servicesCommand } from "./services/index.ts";
@@ -35,7 +35,7 @@ export const ROOT_COMMAND =
     .command("commands", commandsCommand)
     .command("config", configCommand)
     .command("regions", regionsCommand)
-    .command("project", projectsCommand)
+    .command("repo", repoCommand)
     .command("blueprint", blueprintCommand)
     .command("buildpack", buildpackCommand)
     .command("ssh", sshCommand)

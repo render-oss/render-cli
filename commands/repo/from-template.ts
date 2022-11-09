@@ -1,5 +1,5 @@
 import { Log } from "../../deps.ts";
-import { templateNewProject } from "../../new/project/index.ts";
+import { templateNewProject } from "../../new/repo/index.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 
 const desc = 
@@ -20,9 +20,9 @@ If \`user\` is not provided, \`render-examples\` is assumed. If no source prefix
 
 (Future TODO: enable \`gitlab:\` prefix, enable arbitrary Git repositories.)`;
 
-export const repoNewCommand =
+export const repoFromTemplateCommand =
   new Subcommand()
-    .name('new')
+    .name('from-template')
     .description(desc)
     .arguments<[string]>("<identifier:string>")
     .option("-o, --output-directory <path>", "target directory for new repo", { required: false })

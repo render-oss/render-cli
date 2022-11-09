@@ -1,16 +1,16 @@
 import { Subcommand } from "../_helpers.ts";
-import { repoNewCommand } from "./new.ts";
+import { repoFromTemplateCommand } from "./from-template.ts";
 
 const desc = 
 `Commands for managing Render projects/repos.`;
 
-export const projectsCommand =
+export const repoCommand =
   new Subcommand()
-    .name("project")
+    .name("repo")
     .description(desc)
     .action(function() {
       this.showHelp();
       Deno.exit(1);
     })
-    .command("new", repoNewCommand)
+    .command("from-template", repoFromTemplateCommand)
     ;
