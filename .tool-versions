@@ -1,1 +1,3 @@
 deno 1.27.0
+nodejs lts
+java openjdk-17

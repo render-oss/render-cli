@@ -1,0 +1,7 @@
+{
+    "name": "@renderinc/cli-build",
+    "private": true,
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.5.2"
+    }
+}

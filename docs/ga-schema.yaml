@@ -1,0 +1,2176 @@
+openapi: 3.0.2
+info:
+  title: 'Render Public API'
+  description: 'Manage everything about your Render services'
+  version: "1.0.0"
+  contact:
+    name: "Render API"
+    url: "https://render.com/chat"
+    email: "support@render.com"
+servers:
+  - url: https://api.render.com/v1
+security:
+  - BearerAuth: []
+tags:
+  - name: Custom Domains
+  - name: Deploys
+  - name: Jobs
+  - name: Owners
+    description: The `Owners` endpoints supply more information about the users and teams that your API key has access to.
+  - name: Services
+paths:
+  /owners:
+    get:
+      summary: List authorized users and teams
+      operationId: get-owners
+      tags:
+        - Owners
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: email
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    owner:
+                      $ref: '#/components/schemas/owner'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /owners/{ownerId}:
+    parameters:
+      - name: ownerId
+        in: path
+        required: true
+        description: The ID of the user or team
+        schema:
+          type: string
+    get:
+      summary: Retrieve user or team
+      operationId: get-owner
+      tags:
+        - Owners
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/owner'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services:
+    get:
+      summary: List services
+      operationId: get-services
+      tags:
+        - Services
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for the names of services
+        - name: type
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/serviceType'
+          style: form
+          explode: false
+          required: false
+          description: Filter for types of services
+        - name: env
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/serviceEnv'
+          style: form
+          explode: false
+          required: false
+          description: Filter for environments of services
+        - name: region
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/region'
+          style: form
+          explode: false
+          required: false
+          description: Filter for regions of services
+        - name: suspended
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [suspended, not_suspended]
+          style: form
+          explode: false
+          required: false
+          description: Filter services based on whether they're suspended or not suspended
+        - name: createdBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for services created before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: createdAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for services created after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+        - name: updatedBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for services updated before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: updatedAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for services updated after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+        - $ref: '#/components/parameters/ownerIdParam'
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    service:
+                      $ref: '#/components/schemas/service'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    post:
+      summary: Create service
+      operationId: create-service
+      tags:
+        - Services
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/servicePOST'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  service:
+                    $ref: '#/components/schemas/service'
+                  deployId:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: Retrieve service
+      operationId: get-service
+      tags:
+        - Services
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/service'
+        '401':
+          $ref: "#/components/responses/401Unauthorized"
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    patch:
+      summary: Update service
+      operationId: update-service
+      tags:
+        - Services
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/servicePATCH'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/service'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    delete:
+      summary: Delete service
+      operationId: delete-service
+      tags:
+        - Services
+      responses:
+        '204':
+          description: Service deleted
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/deploys:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: List deploys
+      operationId: get-deploys
+      tags:
+        - Deploys
+      parameters:
+        - $ref: '#/components/parameters/startTimeParam'
+        - $ref: '#/components/parameters/endTimeParam'
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    deploy:
+                      $ref: '#/components/schemas/deploy'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    post:
+      summary: Trigger a deploy
+      operationId: create-deploy
+      tags:
+        - Deploys
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clearCache:
+                  type: string
+                  enum: [clear, do_not_clear]
+                  default: do_not_clear
+                  description: 'Defaults to "do_not_clear"'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deploy'
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/deploys/{deployId}:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+      - $ref: '#/components/parameters/deployIdParam'
+    get:
+      summary: Retrieve deploy
+      operationId: get-deploy
+      tags:
+        - Deploys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deploy'
+        '401':
+          $ref: "#/components/responses/401Unauthorized"
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/env-vars:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: Retrieve environment variables
+      operationId: get-env-vars-for-service
+      tags:
+        - Services
+      parameters:
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    envVar:
+                      $ref: '#/components/schemas/envVar'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    put:
+      summary: Update environment variables
+      operationId: update-env-vars-for-service
+      tags:
+        - Services
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/envVarKeyValue'
+                  - $ref: '#/components/schemas/envVarKeyGenerateValue'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    envVar:
+                      $ref: '#/components/schemas/envVar'
+                    cursor:
+                      type: string
+                      format: byte
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/headers:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: Retrieve headers
+      operationId: get-headers
+      tags:
+        - Services
+      parameters:
+        - name: path
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for specific paths that headers apply to
+        - name: name
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for header names
+        - name: value
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for header values
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    headers:
+                      $ref: '#/components/schemas/header'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/routes:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: Retrieve redirect and rewrite rules
+      operationId: get-routes
+      tags:
+        - Services
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [redirect, rewrite]
+          style: form
+          explode: false
+          required: false
+          description: Filter for the type of route rule
+        - name: source
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for the source path of the route
+        - name: destination
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for the destination path of the route
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    routes:
+                      $ref: '#/components/schemas/route'
+                    cursor:
+                      type: string
+                      format: byte
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/custom-domains:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: List custom domains
+      operationId: get-custom-domains
+      tags:
+        - Custom Domains
+      parameters:
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: name
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Filter for the names of custom domain
+        - name: domainType
+          in: query
+          schema:
+            type: string
+            enum: [apex, subdomain]
+          required: false
+          description: Filter for apex or subdomains
+        - name: verificationStatus
+          in: query
+          schema:
+            type: string
+            enum: [verified, unverified]
+          required: false
+          description: Filter for verified or unverified custom domains
+        - name: createdBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for custom domains created before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: createdAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for custom domains created after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    customDomain:
+                      $ref: '#/components/schemas/customDomain'
+                    cursor:
+                      type: string
+                      format: byte
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    post:
+      summary: Add custom domain
+      operationId: create-custom-domain
+      tags:
+        - Custom Domains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/customDomain'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '402':
+          $ref: '#/components/responses/402PaymentRequired'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/custom-domains/{customDomainIdOrName}:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+      - $ref: '#/components/parameters/customDomainIdOrNameParam'
+    get:
+      summary: Retrieve custom domain
+      operationId: get-custom-domain
+      tags:
+        - Custom Domains
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customDomain'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    delete:
+      summary: Delete custom domain
+      operationId: delete-custom-domain
+      tags:
+        - Custom Domains
+      responses:
+        '204':
+          description: Custom domain deleted
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/custom-domains/{customDomainIdOrName}/verify:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+      - $ref: '#/components/parameters/customDomainIdOrNameParam'
+    post:
+      summary: Verify DNS configuration
+      operationId: refresh-custom-domain
+      tags:
+        - Custom Domains
+      responses:
+        '202':
+          description: Custom domain verification triggered
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/suspend:
+    parameters:
+        - $ref: '#/components/parameters/serviceIdParam'
+    post:
+      summary: Suspend service
+      operationId: suspend-service
+      tags:
+        - Services
+      responses:
+        '202':
+          description: Service suspended successfully
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/resume:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    post:
+      summary: Resume service
+      operationId: resume-service
+      tags:
+        - Services
+      responses:
+        '202':
+          description: Service resumed successfully
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/scale:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    post:
+      summary: Scale service to desired number of instances
+      operationId: scale-service
+      tags:
+        - Services
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - numInstances
+              properties:
+                numInstances:
+                  type: integer
+                  example: 3
+      responses:
+        '202':
+          description: Service scaled successfully
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '410':
+          $ref: '#/components/responses/410Gone'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/jobs:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+    get:
+      summary: List jobs
+      operationId: list-job
+      tags:
+        - Jobs
+      parameters:
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [pending, running, succeeded, failed]
+          style: form
+          explode: false
+          required: false
+          description: Filter for the status of the job (`pending`, `running`, `succeeded`, or `failed`)
+        - name: createdBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs created before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: createdAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs created after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+        - name: startedBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs started before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: startedAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs started after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+        - name: finishedBefore
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs finished before a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-06-17T08:15:30Z"
+        - name: finishedAfter
+          in: query
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Filter for jobs finished after a certain time (specified as an ISO 8601 timestamp)
+          example: "2021-02-17T08:15:30Z"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    job:
+                      $ref: '#/components/schemas/job'
+                    cursor:
+                      type: string
+                      format: byte
+                      example: "abc123"
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    post:
+      summary: Create job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - startCommand
+              properties:
+                startCommand:
+                  type: string
+                planId:
+                  type: string
+      operationId: post-job
+      tags:
+        - Jobs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/job'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /services/{serviceId}/jobs/{jobId}:
+    parameters:
+      - $ref: '#/components/parameters/serviceIdParam'
+      - name: jobId
+        in: path
+        required: true
+        description: The ID of the job
+        schema:
+          type: string
+    get:
+      summary: Retrieve job
+      operationId: get-job
+      tags:
+        - Jobs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/job'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429RateLimit'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    cursorParam:
+      name: cursor
+      in: query
+      required: false
+      description: Cursor to begin retrieving entries for this query
+      schema:
+        type: string
+        format: byte
+    customDomainIdOrNameParam:
+      name: customDomainIdOrName
+      in: path
+      required: true
+      description: The ID or name of the custom domain
+      schema:
+        type: string
+    deployIdParam:
+      name: deployId
+      in: path
+      required: true
+      description: The ID of the deploy
+      schema:
+        type: string
+    limitParam:
+      name: limit
+      in: query
+      required: false
+      description: Max number of items that can be returned
+      schema:
+        type: number
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: Defaults to 20
+    ownerIdParam:
+      name: ownerId
+      in: query
+      description: The ID of the owner (team or personal user) whose resources should be returned
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: false
+      required: false
+    serviceIdParam:
+      name: serviceId
+      in: path
+      required: true
+      description: The ID of the service
+      schema:
+        type: string
+    startTimeParam:
+      name: startTime
+      in: query
+      schema:
+        type: integer
+      required: false
+      description: Epoch/Unix timestamp of start of time range to return
+    endTimeParam:
+      name: endTime
+      in: query
+      schema:
+        type: integer
+      required: false
+      description: Epoch/Unix timestamp of end of time range to return
+  schemas:
+    resource:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required: [id, name]
+    service:
+      type: object
+      properties:
+        id:
+          type: string
+        autoDeploy:
+          x-ed-comment: this needs to be a bool.
+          type: string
+          enum: [yes, no]
+        branch:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        name:
+          type: string
+        notifyOnFail:
+          $ref: '#/components/schemas/notifySetting'
+        ownerId:
+          type: string
+        repo:
+          type: string
+          example: "https://github.com/render-examples/flask-hello-world"
+        slug:
+          type: string
+        suspended:
+          x-ed-comment: this needs to be a bool.
+          type: string
+          enum: [suspended, not_suspended]
+        suspenders:
+          type: array
+          items:
+            $ref: '#/components/schemas/suspenderType'
+        type:
+          $ref: '#/components/schemas/serviceType'
+        updatedAt:
+          type: string
+          format: date-time
+        serviceDetails:
+          oneOf:
+          - $ref: '#/components/schemas/staticSiteDetails'
+          - $ref: '#/components/schemas/webServiceDetails'
+          - $ref: '#/components/schemas/privateServiceDetails'
+          - $ref: '#/components/schemas/backgroundWorkerDetails'
+          - $ref: '#/components/schemas/cronJobDetails'
+      required:
+        - id
+        - autoDeploy
+        - branch
+        - createdAt
+        - name
+        - notifyOnFail
+        - ownerId
+        - slug
+        - suspended
+        - suspenders
+        - type
+        - updatedAt
+        - serviceDetails
+    dockerDetails:
+      type: object
+      properties:
+        dockerCommand:
+          type: string
+        dockerContext:
+          type: string
+        dockerfilePath:
+          type: string
+      required:
+        - dockerCommand
+        - dockerContext
+        - dockerfilePath
+    nativeEnvironmentDetails:
+      type: object
+      properties:
+        buildCommand:
+          type: string
+        startCommand:
+          type: string
+      required:
+        - buildCommand
+        - startCommand
+    staticSiteDetails:
+      type: object
+      properties:
+        buildCommand:
+          type: string
+        parentServer:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        publishPath:
+          type: string
+        pullRequestPreviewsEnabled:
+          x-ed-comment: this needs to be a bool.
+          type: string
+          enum: [yes, no]
+        url:
+          type: string
+      required:
+        - buildCommand
+        - publishPath
+        - pullRequestPreviewsEnabled
+        - url
+    webServiceDetails:
+      type: object
+      properties:
+        disk:
+          $ref: '#/components/schemas/resource'
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetails'
+            - $ref: '#/components/schemas/nativeEnvironmentDetails'
+        healthCheckPath:
+          type: string
+        numInstances:
+          type: integer
+        openPorts:
+          x-ed-comment: Should this be minItems=1?
+          type: array
+          items:
+            $ref: '#/components/schemas/serverPort'
+        parentServer:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra, free, custom]
+        pullRequestPreviewsEnabled:
+          x-ed-comment: this needs to be a bool.
+          type: string
+          enum: [yes, no]
+        region:
+          $ref: '#/components/schemas/region'
+        url:
+          type: string
+      required:
+        - env
+        - envSpecificDetails
+        - healthCheckPath
+        - numInstances
+        - openPorts
+        - plan
+        - pullRequestPreviewsEnabled
+        - region
+        - url
+    privateServiceDetails:
+      type: object
+      properties:
+        disk:
+          $ref: '#/components/schemas/resource'
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetails'
+            - $ref: '#/components/schemas/nativeEnvironmentDetails'
+        numInstances:
+          type: integer
+        openPorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/serverPort'
+        parentServer:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra, custom]
+        pullRequestPreviewsEnabled:
+          x-ed-comment: this needs to be a bool.
+          type: string
+          enum: [yes, no]
+        region:
+          $ref: '#/components/schemas/region'
+        url:
+          type: string
+      required:
+        - env
+        - envSpecificDetails
+        - numInstances
+        - openPorts
+        - plan
+        - pullRequestPreviewsEnabled
+        - region
+        - url
+    backgroundWorkerDetails:
+      type: object
+      properties:
+        disk:
+          $ref: '#/components/schemas/resource'
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetails'
+            - $ref: '#/components/schemas/nativeEnvironmentDetails'
+        numInstances:
+          type: integer
+        parentServer:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra, custom]
+        pullRequestPreviewsEnabled:
+          x-ed-comment: this needs to be a bool
+          type: string
+          enum: [yes, no]
+        region:
+          $ref: '#/components/schemas/region'
+      required:
+        - env
+        - envSpecificDetails
+        - numInstances
+        - plan
+        - pullRequestPreviewsEnabled
+        - region
+    cronJobDetails:
+      type: object
+      properties:
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetails'
+            - $ref: '#/components/schemas/nativeEnvironmentDetails'
+        lastSuccessfulRunAt:
+          type: string
+          format: date-time
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra, custom]
+        region:
+          $ref: '#/components/schemas/region'
+        schedule:
+          type: string
+      required:
+        - env
+        - envSpecificDetails
+        - plan
+        - region
+        - schedule
+    servicePOST:
+      type: object
+      required:
+        - type
+        - name
+        - ownerId
+        - repo
+      properties:
+        type:
+          $ref: '#/components/schemas/serviceType'
+        name:
+          type: string
+        ownerId:
+          type: string
+        repo:
+          type: string
+          example: "https://github.com/render-examples/flask-hello-world"
+          description: "Do not include the branch in the repo string. You can instead supply a 'branch' parameter."
+        autoDeploy:
+          type: string
+          enum: [yes, no]
+          default: yes
+          description: 'Defaults to "yes"'
+        branch:
+          type: string
+          description: 'If left empty, this will fall back to the default branch of the repository'
+        envVars:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/envVarKeyValue'
+              - $ref: '#/components/schemas/envVarKeyGenerateValue'
+        secretFiles:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - contents
+            properties:
+              name:
+                type: string
+              contents:
+                type: string
+        serviceDetails:
+          oneOf:
+            - $ref: '#/components/schemas/staticSiteDetailsPOST'
+            - $ref: '#/components/schemas/webServiceDetailsPOST'
+            - $ref: '#/components/schemas/privateServiceDetailsPOST'
+            - $ref: '#/components/schemas/backgroundWorkerDetailsPOST'
+            - $ref: '#/components/schemas/cronJobDetailsPOST'
+    dockerDetailsPOST:
+      x-ed-comment: this needs to be renamed something clearer for SDK consumption. I also can't find where this routes to know what's `required` here.
+      type: object
+      properties:
+        dockerCommand:
+          type: string
+        dockerContext:
+          type: string
+        dockerfilePath:
+          type: string
+          default: "./Dockerfile"
+          description: 'Defaults to "./Dockerfile"'
+    nativeEnvironmentDetailsPOST:
+      x-ed-comment: this needs to be renamed something clearer for SDK consumption. I also can't find where this routes to know what's `required` here.
+      type: object
+      required:
+        - buildCommand
+        - startCommand
+      properties:
+        buildCommand:
+          type: string
+        startCommand:
+          type: string
+    staticSiteDetailsPOST:
+      x-ed-comment: this needs to be renamed something clearer for SDK consumption. I also can't find where this routes to know what's `required` here.
+      type: object
+      properties:
+        buildCommand:
+          type: string
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/header'
+        publishPath:
+          type: string
+          default: 'public'
+          description: 'Defaults to "public"'
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+          default: no
+          description: 'Defaults to "no"'
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/route'
+    webServiceDetailsPOST:
+      x-ed-comment: this needs to be renamed something clearer for SDK consumption. I also can't find where this routes to know what's `required` here.
+      type: object
+      required:
+        - env
+      properties:
+        disk:
+          type: object
+          required:
+            - name
+            - mountPath
+          properties:
+            name:
+              type: string
+            mountPath:
+              type: string
+            sizeGB:
+              type: integer
+              minimum: 1
+              default: 1
+              description: Defaults to 1
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPOST'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPOST'
+        healthCheckPath:
+          type: string
+        numInstances:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Defaults to 1
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+          default: starter
+          description: 'Defaults to "starter"'
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+          default: "no"
+          description: 'Defaults to "no"'
+        region:
+          $ref: '#/components/schemas/region'
+    privateServiceDetailsPOST:
+      type: object
+      required:
+        - env
+      properties:
+        disk:
+          type: object
+          required:
+            - name
+            - mountPath
+          properties:
+            name:
+              type: string
+            mountPath:
+              type: string
+            sizeGB:
+              type: integer
+              minimum: 1
+              default: 1
+              description: Defaults to 1
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPOST'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPOST'
+        numInstances:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Defaults to 1
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+          default: starter
+          description: 'Defaults to "starter"'
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+          default: "no"
+          description: 'Defaults to "no"'
+        region:
+          $ref: '#/components/schemas/region'
+    backgroundWorkerDetailsPOST:
+      type: object
+      required:
+        - env
+      properties:
+        disk:
+          type: object
+          required:
+            - name
+            - mountPath
+          properties:
+            name:
+              type: string
+            mountPath:
+              type: string
+            sizeGB:
+              type: integer
+              minimum: 1
+              default: 1
+              description: Defaults to 1
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPOST'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPOST'
+        numInstances:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Defaults to 1
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+          default: starter
+          description: 'Defaults to "starter"'
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+          default: "no"
+          description: 'Defaults to "no"'
+        region:
+          $ref: '#/components/schemas/region'
+    cronJobDetailsPOST:
+      type: object
+      required:
+        - env
+        - schedule
+      properties:
+        env:
+          $ref: '#/components/schemas/serviceEnv'
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPOST'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPOST'
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+          default: starter
+          description: 'Defaults to "starter"'
+        region:
+          $ref: '#/components/schemas/region'
+        schedule:
+          type: string
+    servicePATCH:
+      type: object
+      properties:
+        autoDeploy:
+          type: string
+          enum: [yes, no]
+        branch:
+          type: string
+        name:
+          type: string
+        serviceDetails:
+          oneOf:
+            - $ref: '#/components/schemas/staticSiteDetailsPATCH'
+            - $ref: '#/components/schemas/webServiceDetailsPATCH'
+            - $ref: '#/components/schemas/privateServiceDetailsPATCH'
+            - $ref: '#/components/schemas/backgroundWorkerDetailsPATCH'
+            - $ref: '#/components/schemas/cronJobDetailsPATCH'
+    dockerDetailsPATCH:
+      type: object
+      properties:
+        dockerCommand:
+          type: string
+        dockerContext:
+          type: string
+        dockerfilePath:
+          type: string
+    nativeEnvironmentDetailsPATCH:
+      type: object
+      properties:
+        buildCommand:
+          type: string
+        startCommand:
+          type: string
+    staticSiteDetailsPATCH:
+      type: object
+      properties:
+        buildCommand:
+          type: string
+        publishPath:
+          type: string
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+    webServiceDetailsPATCH:
+      type: object
+      properties:
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPATCH'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPATCH'
+        healthCheckPath:
+          type: string
+        numInstances:
+          type: integer
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+    privateServiceDetailsPATCH:
+      type: object
+      properties:
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPATCH'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPATCH'
+        numInstances:
+          type: integer
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+    backgroundWorkerDetailsPATCH:
+      type: object
+      properties:
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPATCH'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPATCH'
+        numInstances:
+          type: integer
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+        pullRequestPreviewsEnabled:
+          type: string
+          enum: [yes, no]
+    cronJobDetailsPATCH:
+      type: object
+      properties:
+        envSpecificDetails:
+          oneOf:
+            - $ref: '#/components/schemas/dockerDetailsPATCH'
+            - $ref: '#/components/schemas/nativeEnvironmentDetailsPATCH'
+        plan:
+          type: string
+          enum: [starter, starter_plus, standard, standard_plus, pro, pro_plus, pro_max, pro_ultra]
+        schedule:
+          type: string
+    envVarKeyValue:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    envVarKeyGenerateValue:
+      type: object
+      required:
+        - key
+        - generateValue
+      properties:
+        key:
+          type: string
+        generateValue:
+          type: string
+          enum: [ yes, no ]
+    header:
+      type: object
+      required:
+        - path
+        - name
+        - value
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+    owner:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - type
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        type:
+          type: string
+          enum: [user, team]
+    route:
+      type: object
+      required:
+        - type
+        - source
+        - destination
+      properties:
+        type:
+          type: string
+          enum: [redirect, rewrite]
+        source:
+          type: string
+        destination:
+          type: string
+    serviceType:
+      type: string
+      enum: [static_site, web_service, private_service, background_worker, cron_job]
+    serviceEnv:
+      type: string
+      enum: [docker, elixir, go, node, python, ruby, rust]
+    region:
+      type: string
+      enum: [oregon, frankfurt, singapore, ohio]
+      default: oregon
+      description: 'Defaults to "oregon"'
+    notifySetting:
+      type: string
+      enum: [default, notify, ignore]
+    suspenderType:
+      type: string
+      enum: [admin, billing, user, parent_service, unknown]
+    deploy:
+      x-ed-comment: is this actually used in pkg/api/rest right now? I can't find it. (does this mean the referencing HTTP endpoint exists on the server?)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        commit:
+          type: object
+          properties:
+            id:
+              type: string
+            message:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+        status:
+          type: string
+          enum: [created, build_in_progress, update_in_progress, live, deactivated, build_failed, update_failed, canceled]
+        finishedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    envVar:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    customDomain:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        domainType:
+          type: string
+          enum: [apex, subdomain]
+        publicSuffix:
+          type: string
+        redirectForName:
+          type: string
+        verificationStatus:
+          x-ed-comment: this should be 'verified' and a bool.
+          type: string
+          enum: [verified, unverified]
+        createdAt:
+          type: string
+          format: date-time
+        server:
+          x-ed-comment: this isn't in `type CustomDomain` in the api.
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+      required:
+        - id
+        - name
+        - domainType
+        - publicSuffix
+        - redirectForName
+        - verificationStatus
+        - createdAt
+    job:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "job-xxxxx"
+        serviceId:
+          type: string
+          example: "srv-xxxxx"
+        startCommand:
+          type: string
+          example: "echo 'hello world'"
+        planId:
+          type: string
+          example: "plan-srv-004"
+        status:
+          type: string
+          example: "succeeded"
+        createdAt:
+          type: string
+          example: "2021-07-15T07:20:05.777035-07:00"
+        startedAt:
+          type: string
+          example: "2021-07-15T07:20:05.777035-07:00"
+        finishedAt:
+          type: string
+          example: "2021-07-15T07:20:05.777035-07:00"
+      required:
+        - id
+        - serviceId
+        - startCommand
+        - planId
+    serverPort:
+      type: object
+      properties:
+        port:
+          type: integer
+          example: 10000
+        protocol:
+          type: string
+          enum: [TCP, UDP]
+      required: [port, protocol]
+    error:
+      type: object
+      properties:
+        id:
+          type: string
+        message:
+          x-ed-comment: is this required?
+          type: string
+      required:
+        - id
+    maybeDeploy:
+      x-ed-comment: what is this? it appears unused.
+      type: object
+      properties:
+        triggeringDeploy:
+          type: string
+          enum: [yes, no]
+  responses:
+    400BadRequest:
+      description: The request could not be understood by the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    401Unauthorized:
+      description: Authorization information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    402PaymentRequired:
+      description: You must enter payment information to perform this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    403Forbidden:
+      description: You do not have permissions for the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    404NotFound:
+      description: Unable to find the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    406NotAcceptable:
+      description: Unable to generate preferred media types as specified by Accept request header.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    409Conflict:
+      description: The current state of the resource conflicts with this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    410Gone:
+      description: The requested resource is no longer available.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    429RateLimit:
+      description: Rate limit has been surpassed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    500InternalServerError:
+      description: An unexpected server error has occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    503ServiceUnavailable:
+      description: Server currently unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+  headers:
+    RateLimitRemaining:
+      x-ed-comment: is this used?
+      schema:
+        type: integer
+      description: The number of requests left for this time period.
