@@ -2,6 +2,8 @@ import { YAML,  } from "../deps.ts";
 import { ajv } from "../util/ajv.ts";
 import { identity } from "../util/fn.ts";
 import { getPaths } from "../util/paths.ts";
+import { APIKeyRequired } from '../errors.ts';
+
 import { ALL_REGIONS, Region } from "./types/enums.ts";
 import { assertValidRegion } from "./types/enums.ts";
 import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
@@ -12,7 +14,7 @@ let config: RuntimeConfiguration | null = null;
 const CONFIG_UPGRADE_MAPS = {
   1: identity,
 }
-const FALLBACK_PROFILE: ProfileLatest = {
+const FALLBACK_PROFILE: Partial<ProfileLatest> = {
   defaultRegion: 'oregon', // mimics dashboard behavior
 };
 
@@ -89,18 +91,22 @@ function buildRuntimeProfile(cfg: ConfigLatest): { profile: ProfileLatest, profi
   const profileName = Deno.env.get("RENDERCLI_PROFILE") ?? 'default';
   const profile = cfg.profiles[profileName] ?? {};
 
-  const ret = {
+  const ret: ProfileLatest = {
     ...FALLBACK_PROFILE,
     ...profile,
   }
 
   const actualRegion = Deno.env.get("RENDERCLI_REGION") ?? ret.defaultRegion;
   assertValidRegion(actualRegion);
-  // TODO: clean this up - the assertion should be making the cast unnecessary
+  // TODO: clean this up - the assertion should be making the cast unnecessary, but TS disagrees
   ret.defaultRegion = actualRegion as Region;
 
   ret.apiKey = Deno.env.get("RENDERCLI_APIKEY") ?? ret.apiKey;
   ret.apiHost = Deno.env.get("RENDERCLI_APIHOST") ?? ret.apiHost;
+
+  if (!ret.apiKey) {
+    throw new APIKeyRequired();
+  }
 
   return { profile: ret, profileName };
 }

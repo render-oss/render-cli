@@ -11,7 +11,7 @@ export const APIKeyV1 = Type.String({
 export type APIKeyV1 = Static<typeof APIKeyV1>;
 
 export const ProfileV1 = Type.Object({
-  apiKey: Type.Optional(APIKeyV1),
+  apiKey: APIKeyV1,
   apiHost: Type.Optional(Type.String()),
   defaultRegion: Region,
 });

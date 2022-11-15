@@ -32,7 +32,8 @@ export const configInitCommand =
           {
             name: 'sshPreserveHosts',
             type: Cliffy.Confirm,
-            message: "Render can protect you against Trust On First Use (TOFU) attacks by keeping your SSH `known_hosts` file updated with our SSH fingerprints. Enable this?",
+            message: "Enable SSH pinning in `known_hosts`?",
+            hint: "Render can protect you against Trust On First Use (TOFU) attacks by keeping your SSH `known_hosts` file updated with our SSH fingerprints. We strongly recommend enabling this.",
             default: true,
           },
         ]);
