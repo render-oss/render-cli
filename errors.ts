@@ -30,8 +30,10 @@ export class RepoNotFound extends RenderCLIError {
 }
 
 export class APIKeyRequired extends RenderCLIError {
-  constructor(cfg: RuntimeConfiguration) {
-    super(`Config profile '${cfg.profileName}' does not have an API key set.`);
+  constructor() {
+    super(
+      'No API key found. Please set the RENDERCLI_APIKEY environment variable or run `render config init`.',
+    );
   }
 }
 
