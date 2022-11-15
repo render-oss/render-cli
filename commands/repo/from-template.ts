@@ -18,7 +18,9 @@ github:user/repo-name@gitref
 
 If \`user\` is not provided, \`render-examples\` is assumed. If no source prefix is provided, \`github\` is assumed.
 
-(Future TODO: enable \`gitlab:\` prefix, enable arbitrary Git repositories.)`;
+At present, \`render repo from-template\` does not support private repositories.
+
+(Future TODO: enable \`gitlab:\` prefix, enable arbitrary Git repositories, enable private repositories.)`;
 
 export const repoFromTemplateCommand =
   new Subcommand()
