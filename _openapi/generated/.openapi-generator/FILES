@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/CustomDomainsApi.ts
 apis/DeploysApi.ts
 apis/JobsApi.ts

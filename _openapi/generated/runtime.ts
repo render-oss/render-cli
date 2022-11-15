@@ -13,6 +13,8 @@
  */
 
 
+import { RenderCLIError } from '../../errors.ts';
+
 export const BASE_PATH = "https://api.render.com/v1".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
@@ -233,21 +235,24 @@ function isFormData(value: any): value is FormData {
     return typeof FormData !== "undefined" && value instanceof FormData;
 }
 
-export class ResponseError extends Error {
+export class APIError extends RenderCLIError {
+}
+
+export class ResponseError extends APIError {
     override name: "ResponseError" = "ResponseError";
     constructor(public response: Response, msg?: string) {
         super(msg);
     }
 }
 
-export class FetchError extends Error {
+export class FetchError extends APIError {
     override name: "FetchError" = "FetchError";
     constructor(public cause: Error, msg?: string) {
         super(msg);
     }
 }
 
-export class RequiredError extends Error {
+export class RequiredError extends APIError {
     override name: "RequiredError" = "RequiredError";
     constructor(public field: string, msg?: string) {
         super(msg);
