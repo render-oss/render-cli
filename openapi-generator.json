@@ -1,0 +1,8 @@
+{
+  "allowUnicodeIdentifiers": false,
+  "enumPropertyNaming": "UPPERCASE",
+  "enumUnknownDefaultCase": true,
+  "nullSafeAdditionalProps": true,
+  "supportsES6": true,
+  "useSingleRequestParameter": true
+}
