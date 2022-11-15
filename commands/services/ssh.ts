@@ -1,14 +1,14 @@
-import { getConfig, validateRegion } from "../config/index.ts";
-import { runSSH } from "../ssh/index.ts";
-import { getLogger } from "../util/logging.ts";
-import { Subcommand } from "./_helpers.ts";
+import { getConfig, validateRegion } from "../../config/index.ts";
+import { runSSH } from "../../ssh/index.ts";
+import { getLogger } from "../../util/logging.ts";
+import { Subcommand } from "../_helpers.ts";
 
 const desc = 
 `Opens a SSH session to a Render service.
 
 This command wraps your local \`ssh\` binary and passes any additional command line arguments to that binary. Before invoking \`ssh\`, \`render ssh\` ensures that your local known hosts are updated with current fingerprints for Render services, reducing the likelihood of a TOFU (trust-on-first-use) attack.`;
 
-export const sshCommand =
+export const servicesSshCommand =
   new Subcommand()
     .name('ssh')
     .description(desc)
