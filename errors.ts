@@ -44,3 +44,5 @@ export class ValidationFailed extends RenderCLIError {
     );
   }
 }
+
+export class APIError extends RenderCLIError {}

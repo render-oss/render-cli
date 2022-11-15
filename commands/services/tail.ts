@@ -1,6 +1,6 @@
 import { LogTailEntry } from "../../services/types.ts";
 import { ajv, logAjvErrors } from "../../util/ajv.ts";
-import { getLogger, NON_INTERACTIVE } from "../../util/logging.ts";
+import { getLogger } from "../../util/logging.ts";
 import { apiKeyOrThrow, apiHost, Subcommand, withConfig } from "../_helpers.ts";
 
 const desc = 

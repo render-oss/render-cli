@@ -36,6 +36,7 @@ export type SetupLoggingArgs = {
   verbosity?: 'INFO' | 'DEBUG',
 }
 
+// @ts-ignore it's valid, deno's log handler is confused
 class StderrHandler extends Log.handlers.ConsoleHandler {
   private readonly encoder = new TextEncoder();
 

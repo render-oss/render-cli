@@ -121,7 +121,9 @@ export class BaseAPI {
         if (response && (response.status >= 200 && response.status < 300)) {
             return response;
         }
-        throw new ResponseError(response, 'Response returned an error code');
+        // TODO: integrate with logger in the future
+        console.error(response);
+        throw new ResponseError(response, `Response returned error code '${response.status}': ${await (response?.text() ?? '{}')}`);
     }
 
     private async createFetchParams(context: RequestOpts, initOverrides?: RequestInit | InitOverrideFunction) {
@@ -266,6 +268,7 @@ export const COLLECTION_FORMATS = {
     pipes: "|",
 };
 
+// @ts-ignore legal definition, deno is confused
 export type FetchAPI = WindowOrWorkerGlobalScope['fetch'];
 
 export type Json = any;

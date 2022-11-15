@@ -10,6 +10,7 @@ export { default as AjvFormats } from "https://esm.sh/v86/ajv-formats@2.1.1";
 
 import * as _Cliffy from "https://deno.land/x/cliffy@v0.25.4/mod.ts";
 export const Cliffy = _Cliffy;
+export { Command as CliffyCommand } from "https://deno.land/x/cliffy@v0.25.4/mod.ts";
 
 export { default as stripIndent } from "https://esm.sh/v86/strip-indent@4.0.0";
 export { default as YAML } from "https://esm.sh/v86/js-yaml@4.1.0";

@@ -1,5 +1,3 @@
-import { apiHost, apiKeyOrThrow } from '../commands/_helpers.ts';
-import { RuntimeConfiguration } from '../config/types/index.ts';
 import { 
   Configuration, 
   CustomDomainsApi,
@@ -17,13 +15,10 @@ export class APIClient {
   readonly owners: OwnersApi;
   readonly services: ServicesApi;
 
-  constructor(cfg: RuntimeConfiguration) {
-    const host = apiHost(cfg);
-    const key = apiKeyOrThrow(cfg);
-
+  constructor(apiKey: string, apiHost: string) {
     const apiConfiguration: Configuration = new Configuration({
-      apiKey: key,
-      basePath: `https://${host}`,
+      accessToken: `${apiKey}`,
+      basePath: `https://${apiHost}/v1`,
     });
 
     this.customDomains = new CustomDomainsApi(apiConfiguration);
