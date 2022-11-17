@@ -1,7 +1,7 @@
 import { LogTailEntry } from "../../services/types.ts";
 import { ajv, logAjvErrors } from "../../util/ajv.ts";
 import { getLogger, NON_INTERACTIVE } from "../../util/logging.ts";
-import { apiKeyOrThrow, apiHost, Subcommand, withConfig } from "../_helpers.ts";
+import { apiKeyOrThrow, apiHost, Subcommand, withConfig, apiErrorHandling } from "../_helpers.ts";
 
 const desc = 
 `Tails logs for a given service.
@@ -28,65 +28,75 @@ export const servicesTailCommand =
       const url = `wss://${apiHost(cfg)}/v1/services/${opts.id}/logs/tail`;
       logger.debug(`tail url: ${url}, profile name: ${cfg.profileName}`);
 
-      const stream = new WebSocketStream(
-        url,
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
-        }
-      );
-      
-      const conn = await stream.connection;
-      const reader = await conn.readable.getReader();
-      const writer = await conn.writable.getWriter();
-
-      const logEntryValidator = ajv.compile<LogTailEntry>(LogTailEntry);
-
-
-      setInterval(() => {
-        writer.write('{ "ping": true }');
-      }, 15000);
-      
-      while (true) {
-        const input = (await reader.read()).value;
-        if (!input) {
-          logger.debug("empty packet received from web socket?");
-          continue;
-        }
-
-        let json: string;
-        if (typeof(input) === 'string') {
-          json = input;
-        } else {
-          json = (new TextDecoder()).decode(input);
-        }
-
-        const msg = JSON.parse(json);
+      await apiErrorHandling(logger, async () => {
+        const stream = new WebSocketStream(
+          url,
+          {
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+            },
+          }
+        );
         
-        if (logEntryValidator(msg)) {
-          if (deployIds && !deployIds.has(msg.deployID)) {
+        let conn: WebSocketConnection;
+        let reader: ReadableStreamDefaultReader<string | Uint8Array>;
+        let writer: WritableStreamDefaultWriter<string | Uint8Array>;
+  
+        try {
+          conn = await stream.connection;
+          reader = await conn.readable.getReader();
+          writer = await conn.writable.getWriter();
+        } catch (err) {
+          throw err;
+        }
+  
+        const logEntryValidator = ajv.compile<LogTailEntry>(LogTailEntry);
+  
+  
+        setInterval(() => {
+          writer.write('{ "ping": true }');
+        }, 15000);
+        
+        while (true) {
+          const input = (await reader.read()).value;
+          if (!input) {
+            logger.debug("empty packet received from web socket?");
             continue;
           }
-
-          let output;
-          if (opts.json) {
-            output = json.trim();
+  
+          let json: string;
+          if (typeof(input) === 'string') {
+            json = input;
           } else {
-            output = "";
-
-            if (!opts.raw) {
-              output += `${msg.deployID}: `;
+            json = (new TextDecoder()).decode(input);
+          }
+  
+          const msg = JSON.parse(json);
+          
+          if (logEntryValidator(msg)) {
+            if (deployIds && !deployIds.has(msg.deployID)) {
+              continue;
             }
   
-            output += msg.text;
+            let output;
+            if (opts.json) {
+              output = json.trim();
+            } else {
+              output = "";
+  
+              if (!opts.raw) {
+                output += `${msg.deployID}: `;
+              }
+    
+              output += msg.text;
+            }
+  
+            console.log(output);
+          } else {
+            logger.error("Unparseable entry from tail socket.")
+            logAjvErrors(logger, logEntryValidator.errors);
+            continue;
           }
-
-          console.log(output);
-        } else {
-          logger.error("Unparseable entry from tail socket.")
-          logAjvErrors(logger, logEntryValidator.errors);
-          continue;
         }
-      }
+      });
     }));
