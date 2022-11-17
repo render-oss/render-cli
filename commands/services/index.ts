@@ -1,4 +1,5 @@
 import { Subcommand } from "../_helpers.ts";
+import { servicesSshCommand } from "./ssh.ts";
 import { servicesTailCommand } from "./tail.ts";
 
 const desc = 
@@ -13,4 +14,5 @@ export const servicesCommand =
       Deno.exit(1);
     })
     .command("tail", servicesTailCommand)
+    .command("ssh", servicesSshCommand)
     ;

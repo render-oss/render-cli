@@ -1,5 +1,5 @@
-import { Region } from "../config/types/enums.ts";
-import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
+import { Region } from "../../config/types/enums.ts";
+import { getLogger, NON_INTERACTIVE } from "../../util/logging.ts";
 import { updateKnownHosts } from "./known-hosts.ts";
 
 const RENDER_CLI_SUBCOMMAND_ENV = {
@@ -7,7 +7,7 @@ const RENDER_CLI_SUBCOMMAND_ENV = {
 };
 
 export type RunSSHArgs = {
-  serviceName: string;
+  serviceId: string;
   region: Region;
   sshArgs: Array<string>;
   noHosts?: boolean;
@@ -21,7 +21,7 @@ export async function runSSH(args: RunSSHArgs): Promise<Deno.ProcessStatus> {
     await updateKnownHosts();
   }
 
-  const sshTarget = `${args.serviceName}@ssh.${args.region}.render.com`;
+  const sshTarget = `${args.serviceId}@ssh.${args.region}.render.com`;
 
   logger.debug(`SSH target: ${sshTarget}`);
 

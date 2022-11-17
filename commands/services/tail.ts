@@ -17,7 +17,7 @@ export const servicesTailCommand =
     .option("--raw", "only prints the bare text of the log to stdout")
     .option("--json", "prints Render's log tail as JSON, one per message", { conflicts: ['raw'] })
     .option("--deploy-id <deployId>", "filter logs to the requested deploy ID", { collect: true })
-    .option("--service-id <serviceId>", "the service ID whose logs to request", { required: true })
+    .option("--id <serviceId>", "the service ID whose logs to request", { required: true })
     .action((opts) => withConfig(async (cfg) => {
       const logger = await getLogger();
       const apiKey = apiKeyOrThrow(cfg);
@@ -25,7 +25,7 @@ export const servicesTailCommand =
       opts.deployId = opts.deployId ?? [];
       const deployIds = opts.deployId.length > 0 ? new Set(opts.deployId ?? []) : null;
 
-      const url = `wss://${apiHost(cfg)}/v1/services/${opts.serviceId}/logs/tail`;
+      const url = `wss://${apiHost(cfg)}/v1/services/${opts.id}/logs/tail`;
       logger.debug(`tail url: ${url}, profile name: ${cfg.profileName}`);
 
       const stream = new WebSocketStream(

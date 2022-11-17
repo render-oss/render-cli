@@ -1,7 +1,9 @@
-import { Region } from "../config/types/enums.ts";
-import { FS } from "../deps.ts";
-import { getLogger } from "../util/logging.ts";
-import { getPaths } from "../util/paths.ts";
+import { FS } from "../../deps.ts";
+
+import { Region } from "../../config/types/enums.ts";
+import { getLogger } from "../../util/logging.ts";
+import { getPaths } from "../../util/paths.ts";
+
 
 export type SSHEndpointInfo = Readonly<{
   pubKey: string,

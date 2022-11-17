@@ -3,6 +3,7 @@ build/
 dist/
 tmp/
 vendor/
+node_modules/
 
 *.log
 
