@@ -5,9 +5,9 @@ import { getRequestJSONList } from "../../api/index.ts";
 import { getLogger, renderInteractiveOutput, renderJsonOutput } from "../../util/logging.ts";
 
 const desc = 
-`Lists the services this user can see.`;
+`Lists the jobs this user can see.`;
 
-export const servicesListCommand =
+export const jobsListCommand =
   new Subcommand()
     .name('list')
     .description(desc)
@@ -16,18 +16,21 @@ export const servicesListCommand =
       default: 'table',
     })
     .option("--columns <cols:string[]>", "if --format table, the columns to show.", {
-      default: ['id', 'name', 'type', 'slug', 'suspended'],
+      default: ['id', 'startCommand', 'planId', 'status', 'finishedAt'],
     })
     .group("API parameters")
-    .option("--name <name:string[]>", "the name of a service to filter by", { collect: true })
-    .option("--type <type:string[]>", "the service type to filter by", { collect: true })
-    .option("--env <env:string[]>", "the runtime environment (docker, ruby, python, etc.)", { collect: true })
-    .option("--service-region <svc:string[]>", "the region in which a service is located", { collect: true })
-    .option("--ownerid <ownerId:string[]>", "the owner ID for the service", { collect: true })
-    .option("--created-before <datetime>", "services created before (ISO8601)")
-    .option("--created-after <datetime>", "services created after (ISO8601)")
-    .option("--updated-before <datetime>", "services updated before (ISO8601)")
-    .option("--updated-after <datetime>", "services updated after (ISO8601)")
+    .option(
+      "--service-id <serviceId>",
+      "the service whose deploys to retrieve",
+      { required: true },
+    )
+    .option("--status <status:string[]>", "'pending', 'running', 'succeeded', or 'failed'", { collect: true })
+    .option("--created-before <datetime>", "jobs created before (ISO8601)")
+    .option("--created-after <datetime>", "jobs created after (ISO8601)")
+    .option("--started-before <datetime>", "jobs started before (ISO8601)")
+    .option("--started-after <datetime>", "jobs started after (ISO8601)")
+    .option("--finished-before <datetime>", "jobs finished before (ISO8601)")
+    .option("--finished-after <datetime>", "jobs finished after (ISO8601)")
     .action((opts) => standardAction({
       // TODO:  wrap this more effectively
       //        API calls will all be basically standard, at least for GETs;
@@ -41,17 +44,16 @@ export const servicesListCommand =
         const ret = await getRequestJSONList(
           logger,
           cfg,
-          'service',
-          '/services',
+          'job',
+          `/services/${opts.serviceId}/jobs`,
           {
-            name: opts.name?.flat(Infinity),
-            type: opts.type?.flat(Infinity),
-            env: opts.env?.flat(Infinity),
-            region: opts.serviceRegion?.flat(Infinity),
+            status: opts.status?.flat(Infinity),
             createdBefore: opts.createdBefore,
             createdAfter: opts.createdAfter,
-            updatedBefore: opts.updatedBefore,
-            updatedAfter: opts.createdAfter,
+            startedBefore: opts.startedBefore,
+            startedAfter: opts.startedAfter,
+            finishedBefore: opts.finishedBefore,
+            finishedAfter: opts.finishedAfter,
           },
         );
         logger.debug(`list call returned ${ret.length} entries.`);

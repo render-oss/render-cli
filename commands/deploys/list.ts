@@ -49,12 +49,16 @@ export const deploysListCommand =
             endTime: opts.endTime,
           },
         );
-        logger.info(`list call returned ${ret.length} entries.`);
+        logger.debug(`list call returned ${ret.length} entries.`);
 
         return ret;
       },
-      interactive: (items: Array<unknown>) => {
-        renderInteractiveOutput(items, opts.format, opts.columns);
+      interactive: (items: Array<unknown>, logger: Log.Logger) => {
+        if (items.length > 0)  {
+          renderInteractiveOutput(items, opts.format, opts.columns);
+        } else {
+          logger.warning("No results found.");
+        }
       },
       nonInteractive: (items: Array<unknown>) => {
         renderJsonOutput(items);
