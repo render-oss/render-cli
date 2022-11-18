@@ -10,6 +10,7 @@ import { repoCommand } from './repo/index.ts';
 import { regionsCommand } from "./regions.ts";
 import { servicesCommand } from "./services/index.ts";
 import { deploysCommand } from "./deploys/index.ts";
+import { customDomainsCommand } from "./custom-domains/index.ts";
 
 
 export const ROOT_COMMAND =
@@ -56,5 +57,6 @@ export const ROOT_COMMAND =
     .command("buildpack", buildpackCommand)
     .command("services", servicesCommand)
     .command("deploys", deploysCommand)
+    .command("custom-domains", customDomainsCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;
