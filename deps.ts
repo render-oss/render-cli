@@ -1,6 +1,7 @@
 export * as Path from "https://deno.land/std@0.151.0/path/mod.ts";
 export * as FS from "https://deno.land/std@0.151.0/fs/mod.ts";
 export * as Log from "https://deno.land/std@0.151.0/log/mod.ts";
+export * as QueryString from "https://deno.land/x/querystring@v1.0.2/mod.js";
 
 export { Type, type Static } from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
 export * as Typebox from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
