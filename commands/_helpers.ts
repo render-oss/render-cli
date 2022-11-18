@@ -152,7 +152,7 @@ export function standardAction<T = never>(
 
 export function apiKeyOrThrow(cfg: RuntimeConfiguration): string {
   if (!cfg.profile.apiKey) {
-    throw new APIKeyRequired(cfg);
+    throw new APIKeyRequired();
   }
 
   return cfg.profile.apiKey;

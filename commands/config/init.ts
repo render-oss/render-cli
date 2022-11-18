@@ -28,9 +28,19 @@ export const configInitCommand =
         logger.info("Let's create your default profile.");
         const defaultProfile = await requestProfileInfo();
 
+        const { sshPreserveHosts } = await Cliffy.prompt([
+          {
+            name: 'sshPreserveHosts',
+            type: Cliffy.Confirm,
+            message: "Enable SSH pinning in `known_hosts`?",
+            hint: "Render can protect you against Trust On First Use (TOFU) attacks by keeping your SSH `known_hosts` file updated with our SSH fingerprints. We strongly recommend enabling this.",
+            default: true,
+          },
+        ]);
+
         const cfg: ConfigLatest = {
           version: 1,
-          sshPreserveHosts: false,
+          sshPreserveHosts,
           profiles: {
             default: defaultProfile,
           },
