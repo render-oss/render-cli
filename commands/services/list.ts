@@ -11,12 +11,14 @@ export const servicesListCommand =
   new Subcommand()
     .name('list')
     .description(desc)
+    .group("Presentational controls")
     .option("--format <fmt:string>", "interactive output format", {
       default: 'table',
     })
     .option("--columns <cols:string[]>", "if --format table, the columns to show.", {
       default: ['id', 'name', 'type', 'slug', 'suspended'],
     })
+    .group("API parameters")
     .option("--name <name:string[]>", "the name of a service to filter by", { collect: true })
     .option("--type <type:string[]>", "the service type to filter by", { collect: true })
     .option("--env <env:string[]>", "the runtime environment (docker, ruby, python, etc.)", { collect: true })
