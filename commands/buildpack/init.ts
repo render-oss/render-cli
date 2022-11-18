@@ -7,7 +7,10 @@ import { pathExists } from "../../util/paths.ts";
 import { ForceRequiredError } from "../../errors.ts";
 
 const desc = 
-`Initializes a repository for use with buildpacks within Render.
+`Initializes a repository for use with Heroku-style buildpacks within Render.
+
+You can learn more about buildpacks and Heroku migration at:
+https://render.com/docs/migrate-from-heroku
 
 Similar to our \`heroku-import\` tool, this command will create a
 \`Dockerfile.render\` file and a \`.render-buildpacks.json\` file in the
