@@ -1,5 +1,6 @@
 import { Cliffy, Log } from '../deps.ts';
 import { VERSION } from '../version.ts';
+import { getAtPath } from "./objects.ts";
 
 let isLoggingSetup = false;
 let LOG_VERBOSITY: 'INFO' | 'DEBUG' = 'INFO';
@@ -101,7 +102,11 @@ export function renderInteractiveOutput(
     case 'table':
       if (Array.isArray(obj)) {
         // deno-lint-ignore no-explicit-any
-        const table = Cliffy.Table.from(obj.map((o: any) => tableColumns.map(c => o[c])));
+        const table = Cliffy.Table.from(
+          obj.map(
+            (o: any) => tableColumns.map(c => getAtPath(c, o)),
+          ),
+        );
         table.unshift(tableColumns);
 
         table.render();

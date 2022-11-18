@@ -22,6 +22,7 @@ export function getRequestRaw(
   query: Record<string, any> = {},
 ): Promise<Response> {
   return handleApiErrors(logger, async () => {
+    const reqNumber = apiReqCount++;
     const authorization = `Bearer ${apiKeyOrThrow(cfg)}`;
 
     if (!path.startsWith("/")) {
@@ -30,7 +31,7 @@ export function getRequestRaw(
 
     const url = `https://${apiHost(cfg)}/v1${path}?${queryStringify(query)}`;
 
-    logger.debug(`api dispatch: ${apiReqCount++}: url ${url} (query: ${JSON.stringify(query)})`);
+    logger.debug(`api dispatch: ${reqNumber}: url ${url} (query: ${JSON.stringify(query)})`);
 
     const response = await fetch(url, {
       headers: {
@@ -43,6 +44,7 @@ export function getRequestRaw(
       // this kind of has to be a DOMException because it encapsulates the notion of NetworkError
       // and we don't want to special-case WebSocketStream errors separately. Deno "is a browser",
       // in its mind, so this makes some sense.
+      logger.error(`api error ${reqNumber}: ${JSON.stringify(response.json())}`);
       throw new DOMException(`Error calling ${url}: ${response.status} ${response.statusText}`);
     }
 
@@ -75,12 +77,13 @@ export async function getRequestJSONList<T = unknown>(
 
   let iter = 0;
   while (true) {
+    iter += 1;
     const q: typeof query = {
       limit,
       ...query,
     };
 
-    logger.debug(`Query #${iter++} with cursor: ${cursor}`);
+    logger.debug(`Query #${iter} with cursor: ${cursor}`);
 
     if (cursor) {
       q.cursor = cursor;

@@ -1,13 +1,12 @@
-import { Log } from "../../deps.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 import { getConfig } from "../../config/index.ts";
 import { getRequestJSONList } from "../../api/index.ts";
 import { getLogger, renderInteractiveOutput, renderJsonOutput } from "../../util/logging.ts";
 
 const desc = 
-`Lists the services this user can see.`;
+`Lists the deploys for a given service.`;
 
-export const servicesListCommand =
+export const deploysListCommand =
   new Subcommand()
     .name('list')
     .description(desc)
@@ -16,18 +15,20 @@ export const servicesListCommand =
       default: 'table',
     })
     .option("--columns <cols:string[]>", "if --format table, the columns to show.", {
-      default: ['id', 'name', 'type', 'slug', 'suspended'],
+      default: ['id', 'status', 'createdAt', 'commit.id', 'commit.message'],
     })
     .group("API parameters")
-    .option("--name <name:string[]>", "the name of a service to filter by", { collect: true })
-    .option("--type <type:string[]>", "the service type to filter by", { collect: true })
-    .option("--env <env:string[]>", "the runtime environment (docker, ruby, python, etc.)", { collect: true })
-    .option("--service-region <svc:string[]>", "the region in which a service is located", { collect: true })
-    .option("--ownerid <ownerId:string[]>", "the owner ID for the service", { collect: true })
-    .option("--created-before <datetime>", "services created before (ISO8601)")
-    .option("--created-after <datetime>", "services created after (ISO8601)")
-    .option("--updated-before <datetime>", "services updated before (ISO8601)")
-    .option("--updated-after <datetime>", "services updated after (ISO8601)")
+    .option(
+      "--service-id <serviceId>",
+      "the service whose deploys to retrieve",
+      { required: true },
+    )
+    .option(
+      "--start-time <timestamp:number>", "start of the time range to return"
+    )
+    .option(
+      "--end-time <timestamp:number>", "end of the time range to return"
+    )
     .action((opts) => standardAction({
       // TODO:  wrap this more effectively
       //        API calls will all be basically standard, at least for GETs;
@@ -41,17 +42,11 @@ export const servicesListCommand =
         const ret = await getRequestJSONList(
           logger,
           cfg,
-          'service',
-          '/services',
+          'deploy',
+          `/services/${opts.serviceId}/deploys`,
           {
-            name: opts.name?.flat(Infinity),
-            type: opts.type?.flat(Infinity),
-            env: opts.env?.flat(Infinity),
-            region: opts.serviceRegion?.flat(Infinity),
-            createdBefore: opts.createdBefore,
-            createdAfter: opts.createdAfter,
-            updatedBefore: opts.updatedBefore,
-            updatedAfter: opts.createdAfter,
+            startTime: opts.startTime,
+            endTime: opts.endTime,
           },
         );
         logger.info(`list call returned ${ret.length} entries.`);
