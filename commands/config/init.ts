@@ -38,6 +38,17 @@ export const configInitCommand =
 
         logger.info(`Writing profile to '${configFile}'...`);
         await Deno.writeTextFile(configFile, YAML.dump(cfg));
+        if (Deno.build.os === 'windows') {
+          logger.warning(`Deno does not currently support file permissions on Windows. As such,`);
+          logger.warning(`'${configFile}' has user-level default permissions. On single-user`);
+          logger.warning(`systems, this is fine. On multi-user systems, you may wish to further`);
+          logger.warning(`secure your Render credentials.`)
+          logger.warning('');
+          logger.warning('See https://rndr.in/windows-file-acl for potential solutions.');
+        } else {
+          logger.debug(`chmod '${configFile}' to 600`);
+          await Deno.chmod(configFile, 0o600);
+        }
 
         logger.info("Done! You're ready to use the Render CLI!");
         return 0;
