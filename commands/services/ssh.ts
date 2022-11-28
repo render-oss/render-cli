@@ -23,6 +23,7 @@ export const servicesSshCommand =
       const { id } = opts;
 
       const status = await runSSH({
+        config,
         serviceId: id, 
         region: validateRegion(opts.region ?? config.profile.defaultRegion),
         sshArgs: sshArgs ?? [],

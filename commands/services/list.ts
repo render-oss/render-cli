@@ -1,8 +1,7 @@
-import { Log } from "../../deps.ts";
-import { standardAction, Subcommand } from "../_helpers.ts";
+import { apiGetAction, Subcommand } from "../_helpers.ts";
 import { getConfig } from "../../config/index.ts";
 import { getRequestJSONList } from "../../api/index.ts";
-import { getLogger, renderInteractiveOutput, renderJsonOutput } from "../../util/logging.ts";
+import { getLogger } from "../../util/logging.ts";
 
 const desc = 
 `Lists the services this user can see.`;
@@ -28,16 +27,13 @@ export const servicesListCommand =
     .option("--created-after <datetime>", "services created after (ISO8601)")
     .option("--updated-before <datetime>", "services updated before (ISO8601)")
     .option("--updated-after <datetime>", "services updated after (ISO8601)")
-    .action((opts) => standardAction({
-      // TODO:  wrap this more effectively
-      //        API calls will all be basically standard, at least for GETs;
-      //        interactive/noninteractive/exit-code should be extracted and not
-      //        boilerplated.
+    .action((opts) => apiGetAction({
+      format: opts.format,
+      tableColumns: opts.columns,
       processing: async () => {
         const cfg = await getConfig();
         const logger = await getLogger();
 
-        logger.debug("dispatching getRequestJSONList");
         const ret = await getRequestJSONList(
           logger,
           cfg,
@@ -58,15 +54,6 @@ export const servicesListCommand =
 
         return ret;
       },
-      interactive: (items: Array<unknown>, logger: Log.Logger) => {
-        if (items.length > 0)  {
-          renderInteractiveOutput(items, opts.format, opts.columns);
-        } else {
-          logger.warning("No results found.");
-        }
-      },
-      nonInteractive: (items: Array<unknown>) => {
-        renderJsonOutput(items);
-      },
-      exitCode: (items: Array<unknown>) => items.length > 0 ? 0 : 1,
-    }));
+    }
+  )
+);

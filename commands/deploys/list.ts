@@ -1,7 +1,7 @@
-import { standardAction, Subcommand } from "../_helpers.ts";
+import { apiGetAction, Subcommand } from "../_helpers.ts";
 import { getConfig } from "../../config/index.ts";
 import { getRequestJSONList } from "../../api/index.ts";
-import { getLogger, renderInteractiveOutput, renderJsonOutput } from "../../util/logging.ts";
+import { getLogger } from "../../util/logging.ts";
 
 const desc = 
 `Lists the deploys for a given service.`;
@@ -29,11 +29,9 @@ export const deploysListCommand =
     .option(
       "--end-time <timestamp:number>", "end of the time range to return"
     )
-    .action((opts) => standardAction({
-      // TODO:  wrap this more effectively
-      //        API calls will all be basically standard, at least for GETs;
-      //        interactive/noninteractive/exit-code should be extracted and not
-      //        boilerplated.
+    .action((opts) => apiGetAction({
+      format: opts.format,
+      tableColumns: opts.columns,
       processing: async () => {
         const cfg = await getConfig();
         const logger = await getLogger();
@@ -53,15 +51,7 @@ export const deploysListCommand =
 
         return ret;
       },
-      interactive: (items: Array<unknown>, logger: Log.Logger) => {
-        if (items.length > 0)  {
-          renderInteractiveOutput(items, opts.format, opts.columns);
-        } else {
-          logger.warning("No results found.");
-        }
-      },
-      nonInteractive: (items: Array<unknown>) => {
-        renderJsonOutput(items);
-      },
-      exitCode: (items: Array<unknown>) => items.length > 0 ? 0 : 1,
-    }));
+    }
+  )
+);
+  

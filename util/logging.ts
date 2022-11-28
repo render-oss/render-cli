@@ -92,8 +92,8 @@ export async function getLogger(name?: string) {
 
 export function renderInteractiveOutput(
   obj: unknown,
-  format: string,
-  tableColumns: string[],
+  tableColumns?: string[],
+  format = 'table',
 ): void {
   switch (format) {
     case 'json':
@@ -101,9 +101,13 @@ export function renderInteractiveOutput(
       return;
     case 'table':
       if (Array.isArray(obj)) {
-        // deno-lint-ignore no-explicit-any
+        if (!tableColumns) {
+          throw new Error(`Interactive output in table mode, but no table columns provided.`);
+        }
+
         const table = Cliffy.Table.from(
           obj.map(
+            // deno-lint-ignore no-explicit-any
             (o: any) => tableColumns.map(c => getAtPath(c, o)),
           ),
         );
