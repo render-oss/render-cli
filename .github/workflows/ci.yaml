@@ -45,6 +45,8 @@ jobs:
         with:
           name: render-binaries
           path: /tmp/artifacts
+      - name: strip binaries for release
+        run: sudo apt-get install llvm && llvm-strip /tmp/artifacts/*
       - name: Do GitHub release
         uses: softprops/action-gh-release@v1
         with:
