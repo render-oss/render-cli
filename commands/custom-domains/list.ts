@@ -1,7 +1,7 @@
-import { standardAction, Subcommand } from "../_helpers.ts";
+import { apiGetAction, Subcommand } from "../_helpers.ts";
 import { getConfig } from "../../config/index.ts";
 import { getRequestJSONList } from "../../api/index.ts";
-import { getLogger, renderInteractiveOutput, renderJsonOutput } from "../../util/logging.ts";
+import { getLogger } from "../../util/logging.ts";
 
 const desc = 
 `Lists the custom domains for a given service.`;
@@ -28,11 +28,9 @@ export const customDomainsListCommand =
     .option("--verification-status <name:string[]>", "'verified' or 'unverified'", { collect: true })
     .option("--created-before <datetime>", "services created before (ISO8601)")
     .option("--created-after <datetime>", "services created after (ISO8601)")
-    .action((opts) => standardAction({
-      // TODO:  wrap this more effectively
-      //        API calls will all be basically standard, at least for GETs;
-      //        interactive/noninteractive/exit-code should be extracted and not
-      //        boilerplated.
+    .action((opts) => apiGetAction({
+      format: opts.format,
+      tableColumns: opts.columns,
       processing: async () => {
         const cfg = await getConfig();
         const logger = await getLogger();
@@ -55,11 +53,4 @@ export const customDomainsListCommand =
 
         return ret;
       },
-      interactive: (items: Array<unknown>) => {
-        renderInteractiveOutput(items, opts.format, opts.columns);
-      },
-      nonInteractive: (items: Array<unknown>) => {
-        renderJsonOutput(items);
-      },
-      exitCode: (items: Array<unknown>) => items.length > 0 ? 0 : 1,
     }));

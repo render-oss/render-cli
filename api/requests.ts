@@ -5,7 +5,6 @@ import { RuntimeConfiguration } from "../config/types/index.ts";
 import { VERSION } from "../version.ts";
 import { apiHost, apiKeyOrThrow } from "./config.ts";
 import { handleApiErrors } from "./error-handling.ts";
-import { getLogger } from "../util/logging.ts";
 
 function queryStringify(query: Record<string, any>) {
   return QueryString.stringify(query, {

@@ -1,8 +1,6 @@
 import { Subcommand } from "../_helpers.ts";
 import { blueprintLaunchCommand } from "./launch.ts";
 
-import { blueprintValidateCommand } from "./validate.ts";
-
 const desc = 
 `Commands for interacting with Render Blueprints (render.yaml files).`;
 

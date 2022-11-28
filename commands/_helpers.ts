@@ -1,9 +1,8 @@
 import { getConfig } from "../config/index.ts";
 import { RuntimeConfiguration } from "../config/types/index.ts";
 import { Cliffy, Log } from '../deps.ts';
-import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
-import { APIKeyRequired, RenderCLIError } from "../errors.ts";
-import { getPaths } from "../util/paths.ts";
+import { getLogger, NON_INTERACTIVE, renderInteractiveOutput, renderJsonOutput } from "../util/logging.ts";
+import { RenderCLIError } from "../errors.ts";
 
 const { Command } = Cliffy;
 
@@ -15,6 +14,7 @@ export type GlobalOptions = {
   region?: string;
 }
 
+// @ts-ignore Deno is confused, but this is fine; TODO: resolve
 export const Subcommand = Command<GlobalOptions>;
 
 export async function withConfig(fn: (cfg: RuntimeConfiguration) => Promise<void>) {
@@ -148,4 +148,34 @@ export function standardAction<T = never>(
       Deno.exit(2);
     }
   })();
+}
+
+export type APIGetActionArgs<T = unknown> =
+  | {
+    processing: (logger: Log.Logger, isNonInteractive: boolean) => T | Promise<T>;
+
+    format?: string,
+    tableColumns?: string[],
+  };
+
+export function apiGetAction<T = unknown>(args: APIGetActionArgs<T>) {
+  return standardAction({
+    processing: args.processing,
+    interactive: (items: unknown | Array<unknown>, logger: Log.Logger) => {
+      if (items && (!Array.isArray(items) || items.length > 0)) {
+        renderInteractiveOutput(items, args.tableColumns, args.format);
+      } else {
+        logger.warning("No results found.");
+      }
+    },
+    nonInteractive: (items: unknown | Array<unknown>) => {
+      renderJsonOutput(items);
+    },
+    exitCode: (items: unknown | Array<unknown>) =>
+      Array.isArray(items)
+        ? items.length > 0
+          ? 0
+          : 1
+        : !!items,
+  });
 }

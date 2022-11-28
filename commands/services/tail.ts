@@ -1,4 +1,6 @@
-import { apiHost, apiKeyOrThrow, handleApiErrors } from "../../api/index.ts";
+import { apiHost, apiKeyOrThrow, getRequestJSON, handleApiErrors } from "../../api/index.ts";
+import { RenderCLIError } from "../../errors.ts";
+import { UNLOGGABLE_SERVICE_TYPES } from "../../services/constants.ts";
 import { LogTailEntry } from "../../services/types.ts";
 import { ajv, logAjvErrors } from "../../util/ajv.ts";
 import { getLogger } from "../../util/logging.ts";
@@ -30,6 +32,19 @@ export const servicesTailCommand =
       logger.debug(`tail url: ${url}, profile name: ${cfg.profileName}`);
 
       await handleApiErrors(logger, async () => {
+        logger.debug("dispatching to check for static_site");
+        const service = (await getRequestJSON(
+          logger,
+          cfg,
+          `/services/${opts.id}`,
+        // TODO: resolve later when API clients are functional
+        // deno-lint-ignore no-explicit-any
+        )) as any;
+
+        if (UNLOGGABLE_SERVICE_TYPES.has(service.type)) {
+          throw new RenderCLIError(`Service '${opts.id}' is of type '${service.type}', which has no logs.`);
+        }
+
         const stream = new WebSocketStream(
           url,
           {
