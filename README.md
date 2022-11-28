@@ -1,17 +1,33 @@
 # render-cli #
 
-## Installing render-cli ##
-TODO: write
+## Getting render-cli ##
+### The easy way: getting releases ###
+You can download a platform-specific build of `render-cli` from the [releases page](https://github.com/render-oss/render-cli/releases).
+
+### The less-easy-but-still-easy way: getting builds from `main` ###
+If you head to [GitHub Actions](https://github.com/render-oss/render-cli/actions) and click a passing build, you can download the latest artifacts at the bottom of the page.
+
+### The moderately difficult way: pull the repo ###
+You can also clone this repository (fork it first, if you want!) and run the application from the repo itself. Something like this will get you sorted:
+
+```bash
+git clone git@github.com:render-oss/render-cli.git
+cd render-cli
+make deps
+
+# 'deno task run' replaces 'render' in executable invocations
+deno task run --help
+```
 
 ## Using render-cli ##
-render-cli attempts to be a friendly and explorable command-line tool. For any command or subcommand under `render`, you can pass `--help` for detailed information on how it works.
+`render-cli` attempts to be a friendly and explorable command-line tool. For any command or subcommand under `render`, you can pass `--help` for detailed information on how it works.
 
-Is something hard to use, unpleasant to use, or unclear? **Please let us know!** Filing an issue against this repo is super helpful, as is talking to our fantastic support team.
+**You'll want to get started by building a config file.** The magic words for this are `render config init`, and it'll walk you through getting set up.
 
-TODO: links ^
+Is something hard to use, unpleasant to use, or unclear? **Please let us know!** As the CLI is an open-source project, we try to work in the open as much as possible; please [check the issues](https://github.com/render-oss/render-cli/issues) and file a new one if appropriate!
 
 ### Shell completions ###
-TODO: write
+`render-cli` supports completions for `bash`, `zsh`, and `fish`. Once installed, type `render completions --help` for details.
 
 ## Environment variables ##
 - `RENDERCLI_CONFIG_FILE`: the path to a render-cli configuration file. If this file does not exist, render-cli will _not_ halt (but the application may fail due to missing configuration).
