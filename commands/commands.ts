@@ -1,6 +1,6 @@
 import { ALL_REGIONS } from "../config/types/enums.ts";
 import { Cliffy } from "../deps.ts";
-import { getLogger, renderJson } from "../util/logging.ts";
+import { getLogger, renderJsonOutput } from "../util/logging.ts";
 import { standardAction, Subcommand } from "./_helpers.ts";
 
 const desc = 
@@ -59,7 +59,7 @@ export const commandsCommand =
           }
         },
         nonInteractive: (result) => {
-          console.log(renderJson(result));
+          renderJsonOutput(result);
         },
         exitCode: () => 0,
       });

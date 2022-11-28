@@ -1,7 +1,7 @@
 import { getConfig, validateRegion } from "../../config/index.ts";
 import { runSSH } from "../../services/ssh/index.ts";
 import { getLogger } from "../../util/logging.ts";
-import { apiErrorHandling, Subcommand } from "./../_helpers.ts";
+import { Subcommand } from "./../_helpers.ts";
 
 const desc = 
 `Opens a SSH session to a Render service.

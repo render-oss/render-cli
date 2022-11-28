@@ -1,7 +1,8 @@
+import { apiHost, apiKeyOrThrow, handleApiErrors } from "../../api/index.ts";
 import { LogTailEntry } from "../../services/types.ts";
 import { ajv, logAjvErrors } from "../../util/ajv.ts";
-import { getLogger, NON_INTERACTIVE } from "../../util/logging.ts";
-import { apiKeyOrThrow, apiHost, Subcommand, withConfig, apiErrorHandling } from "../_helpers.ts";
+import { getLogger } from "../../util/logging.ts";
+import { Subcommand, withConfig } from "../_helpers.ts";
 
 const desc = 
 `Tails logs for a given service.
@@ -28,7 +29,7 @@ export const servicesTailCommand =
       const url = `wss://${apiHost(cfg)}/v1/services/${opts.id}/logs/tail`;
       logger.debug(`tail url: ${url}, profile name: ${cfg.profileName}`);
 
-      await apiErrorHandling(logger, async () => {
+      await handleApiErrors(logger, async () => {
         const stream = new WebSocketStream(
           url,
           {
