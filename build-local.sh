@@ -14,13 +14,10 @@ dispatch_build() {
 
   MAKE_TARGET="build-$1-$2"
 
-  [ "$DEBUG" -eq 1 ] && echo "- build-local.sh resolved to '${MAKE_TARGET}'"
-
   export OUTDIR="$ROOT_DIR/out"
   mkdir -p "$OUTDIR"
   export OUTFILE="render"
 
-  [ "$DEBUG" -eq 1 ] && echo "- writing to '${OUTDIR}'/${OUTFILE}'"
   [ -f "${OUTDIR}"/"${OUTFILE}" ] && rm "${OUTDIR}"/"${OUTFILE}"
   make "${MAKE_TARGET}"
 }
