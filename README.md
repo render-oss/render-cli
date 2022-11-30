@@ -22,7 +22,7 @@ deno task run --help
 ```
 
 To build a local binary, run `make build-local`. It will emit a platform-correct binary on supported platforms and write it
-to `./out/render`.
+to `./bin/render`.
 
 ## Using render-cli ##
 `render-cli` attempts to be a friendly and explorable command-line tool. For any command or subcommand under `render`, you can pass `--help` for detailed information on how it works.

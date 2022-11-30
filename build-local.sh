@@ -14,7 +14,7 @@ dispatch_build() {
 
   MAKE_TARGET="build-$1-$2"
 
-  export OUTDIR="$ROOT_DIR/out"
+  export OUTDIR="$ROOT_DIR/bin"
   mkdir -p "$OUTDIR"
   export OUTFILE="render"
 
