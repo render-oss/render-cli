@@ -8,6 +8,8 @@ You can download a platform-specific build of `render-cli` from the [releases pa
 If you head to [GitHub Actions](https://github.com/render-oss/render-cli/actions) and click a passing build, you can download the latest artifacts at the bottom of the page.
 
 ### The moderately difficult way: pull the repo ###
+_This is necessary to run `render-cli` on platforms not supported by `deno compile`, such as Linux `arm64`._
+
 You can also clone this repository (fork it first, if you want!) and run the application from the repo itself. Something like this will get you sorted:
 
 ```bash
@@ -18,6 +20,9 @@ make deps
 # 'deno task run' replaces 'render' in executable invocations
 deno task run --help
 ```
+
+To build a local binary, run `make build-local`. It will emit a platform-correct binary on supported platforms and write it
+to `./out/render`.
 
 ## Using render-cli ##
 `render-cli` attempts to be a friendly and explorable command-line tool. For any command or subcommand under `render`, you can pass `--help` for detailed information on how it works.

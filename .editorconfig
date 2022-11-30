@@ -1,6 +1,6 @@
 root = true
 
-[*.{js,ts,jsx,tsx,json,json5,yaml,yml,toml,md}]
+[*.{js,ts,jsx,tsx,json,json5,yaml,yml,toml,md,sh}]
 indent_size = 2
 tab_width = 2
 indent_style = space

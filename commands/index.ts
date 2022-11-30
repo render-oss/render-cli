@@ -12,12 +12,12 @@ import { servicesCommand } from "./services/index.ts";
 import { deploysCommand } from "./deploys/index.ts";
 import { customDomainsCommand } from "./custom-domains/index.ts";
 import { jobsCommand } from "./jobs/index.ts";
+import { versionCommand } from './version.ts';
 
 
 export const ROOT_COMMAND =
   (new Cliffy.Command())
     .name("render")
-    .version(VERSION)
     .description("The CLI for the easiest cloud platform you'll ever use.\n\nType `render config init` to get started.")
     .globalOption(
       "-v, --verbose",
@@ -50,6 +50,7 @@ export const ROOT_COMMAND =
       this.showHelp();
       Deno.exit(1);
     })
+    .command("version", versionCommand)
     .command("commands", commandsCommand)
     .command("config", configCommand)
     .command("regions", regionsCommand)
