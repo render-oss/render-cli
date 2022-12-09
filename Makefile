@@ -60,3 +60,9 @@ build-windows-x86_64: deps
 		--target=x86_64-pc-windows-msvc \
 		--output=${OUTDIR}/${OUTFILE} \
 		./entry-point.ts
+
+build-completions: build-local
+	mkdir -p ./share/fish/vendor_completions.d ./share/bash/bash_completion.d ./share/zsh/site-functions
+	./bin/render completions fish > ./share/fish/vendor_completions.d/render.fish
+	./bin/render completions bash > ./share/bash/bash_completion.d/render.bash
+	./bin/render completions zsh > ./share/zsh/site-functions/render.zsh

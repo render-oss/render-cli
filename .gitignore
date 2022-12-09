@@ -11,7 +11,8 @@ node_modules/
 
 *.log
 
-# executables
+# executables and build artifacts
+/share
 /bin
 render
 render-*
