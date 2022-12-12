@@ -12,8 +12,10 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - name: Check out code
+      - name: Check out code (full depth for tags)
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: caching deps
         run: make deps
       # this version will be a bare tag if this commit is the most recent
