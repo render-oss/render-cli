@@ -1,7 +1,13 @@
 OUTDIR ?= "/tmp"
 
+write-homebrew-version:
+	echo "export const VERSION = \"$(git describe --tags)-homebrew\" as const;" > version.ts
+
+write-raw-version:
+	echo "export const VERSION = \"$(git describe --tags)\" as const;" > version.ts
+
 build-local:
-	./build-local.sh
+	./_build/build-local.sh
 
 cache-deps:
 	deno cache --lock=deps-lock.json --lock-write --import-map=import_map.json deps.ts

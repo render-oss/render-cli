@@ -2,7 +2,6 @@
 *~
 .DS_Store
 
-_build/
 build/
 dist/
 tmp/
@@ -16,3 +15,6 @@ node_modules/
 /bin
 render
 render-*
+
+# this is now automatically updated
+version.ts
