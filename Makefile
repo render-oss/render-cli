@@ -1,10 +1,10 @@
 OUTDIR ?= "/tmp"
 
 write-homebrew-version:
-	echo "export const VERSION = \"$(git describe --tags)-homebrew\" as const;" > version.ts
+	./_build/write-version.sh homebrew > version.ts
 
 write-raw-version:
-	echo "export const VERSION = \"$(git describe --tags)\" as const;" > version.ts
+	./_build/write-version.sh > version.ts
 
 build-local:
 	./_build/build-local.sh
