@@ -32,6 +32,8 @@ jobs:
         run: make build-windows-x86_64
       - name: setting chmod
         run: chmod +x /tmp/render-*
+      - name: test-running linux artifact just to be sure...
+        run: /tmp/render-linux-x86_64 version
       - name: uploading artifacts (all)
         uses: actions/upload-artifact@v2
         # if: startsWith(github.ref, 'refs/tags/')
