@@ -8,5 +8,5 @@ export const versionCommand =
     .name('version')
     .description(desc)
     .action(() => {
-      console.log(`v${VERSION}`);
+      console.log(VERSION);
     });
