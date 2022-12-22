@@ -13,6 +13,7 @@ import { deploysCommand } from "./deploys/index.ts";
 import { customDomainsCommand } from "./custom-domains/index.ts";
 import { jobsCommand } from "./jobs/index.ts";
 import { versionCommand } from './version.ts';
+import { dashboardCommand } from './dashboard.ts';
 
 
 export const ROOT_COMMAND =
@@ -60,6 +61,7 @@ export const ROOT_COMMAND =
     .command("services", servicesCommand)
     .command("deploys", deploysCommand)
     .command("jobs", jobsCommand)
+    .command("dashboard", dashboardCommand)
     .command("custom-domains", customDomainsCommand)
     .command("completions", new Cliffy.CompletionsCommand())
     ;
