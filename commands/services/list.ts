@@ -2,6 +2,8 @@ import { apiGetAction, Subcommand } from "../_helpers.ts";
 import { getConfig } from "../../config/index.ts";
 import { getRequestJSONList } from "../../api/index.ts";
 import { getLogger } from "../../util/logging.ts";
+import { funcError } from "../../util/errors.ts";
+import { RenderCLIError } from "../../errors.ts";
 
 const desc = 
 `Lists the services this user can see.`;
@@ -15,7 +17,7 @@ export const servicesListCommand =
       default: 'table',
     })
     .option("--columns <cols:string[]>", "if --format table, the columns to show.", {
-      default: ['id', 'name', 'type', 'slug', 'suspended'],
+      default: ['id', 'name', 'type', 'serviceDetails.env', 'slug', 'serviceDetails.numInstances'],
     })
     .group("API parameters")
     .option("--name <name:string[]>", "the name of a service to filter by", { collect: true })
@@ -27,6 +29,10 @@ export const servicesListCommand =
     .option("--created-after <datetime>", "services created after (ISO8601)")
     .option("--updated-before <datetime>", "services updated before (ISO8601)")
     .option("--updated-after <datetime>", "services updated after (ISO8601)")
+    .group("API-nonstandard parameters")
+    .option("--suspended <susp:string>", "'true'/'yes', 'false'/'no', or 'all'", {
+      default: 'false',
+    })
     .action((opts) => apiGetAction({
       format: opts.format,
       tableColumns: opts.columns,
@@ -44,6 +50,14 @@ export const servicesListCommand =
             type: opts.type?.flat(Infinity),
             env: opts.env?.flat(Infinity),
             region: opts.serviceRegion?.flat(Infinity),
+            suspended:
+              opts.suspended === 'all'
+                ? ['suspended', 'not_suspended' ]
+                : ['true', 'yes'].includes(opts.suspended.toLowerCase())
+                  ? ['suspended']
+                  : ['false', 'no'].includes(opts.suspended.toLowerCase())
+                    ? ['not_suspended']
+                    : funcError(new RenderCLIError(`invalid --suspended: ${opts.suspended}`)),
             createdBefore: opts.createdBefore,
             createdAfter: opts.createdAfter,
             updatedBefore: opts.updatedBefore,
