@@ -1,13 +1,7 @@
 OUTDIR ?= "/tmp"
 
-write-homebrew-version:
-	./_build/write-version.sh homebrew > version.ts
-
-write-raw-version:
-	./_build/write-version.sh > version.ts
-
 build-local:
-	./_build/build-local.sh
+	./_build/build-local.bash
 
 cache-deps:
 	deno cache --lock=deps-lock.json --lock-write --import-map=import_map.json deps.ts

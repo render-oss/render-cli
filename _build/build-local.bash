@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # This script is a little easier than trying to do it
 # all in a Makefile. It handles Deno-specific build arguments
 # and dumps the compiled binary in `./out/render`.
