@@ -55,28 +55,28 @@ jobs:
         uses: actions/checkout@v2
       - name: Create temp directories
         run:
-          mkdir /tmp/artifacts
-          mkdir /tmp/nupkg
+          mkdir ./tmp/artifacts
+          mkdir ./tmp/nupkg
       - uses: actions/download-artifact@v3
         with:
           name: render-binaries
-          path: /tmp/artifacts
+          path: ./tmp/artifacts
       - name: Prep executable
-        run: cp /tmp/artifacts/render-windows-x86_64.exe /tmp/nupkg/render.exe
+        run: cp ./tmp/artifacts/render-windows-x86_64.exe ./tmp/nupkg/render.exe
       - name: copy tools to nupkg
         run:
-          cp -r ./_build/nupkg/tools /tmp/nupkg/tools
+          cp -r ./_build/nupkg/tools ./tmp/nupkg/tools
       - name: output templated nuspec
         run:
-          cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > /tmp/nupkg/render-cli.nuspec
+          cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > ./tmp/nupkg/render-cli.nuspec
       - name: enumerating nupkg files
-        run: find /tmp/nupkg
+        run: find ./tmp/nupkg
       - name: pack nupkg
         uses: crazy-max/ghaction-chocolatey@v2
         with:
-          args: pack --outputdirectory /tmp /tmp/nupkg/render-cli.nuspec
+          args: pack ./tmp/nupkg/render-cli.nuspec
       - name: check for nupkg
-        run: ls /tmp
+        run: ls . && find ./tmp
 
   make-release:
     runs-on: ubuntu-latest
