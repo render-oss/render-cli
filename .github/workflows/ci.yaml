@@ -67,12 +67,8 @@ jobs:
         run:
           cp -r ./_build/nupkg/tools /tmp/nupkg/tools
       - name: output templated nuspec
-        uses: edgardleal/mustache-template-action@v1.0.0
-        env:
-          PACKAGE_VERSION: ${{ steps.get_version.PACKAGE_VERSION }}
-        with:
-          input: ./_build/nupkg/render-cli.nuspec.template
-          output: /tmp/nupkg/render-cli.nuspec
+        run:
+          cat ./_build/nupkg/render-cli.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > /tmp/nupkg/render-cli.nuspec
       - name: pack nuspec
         uses: crazy-max/ghaction-chocolatey@v2
         with:
