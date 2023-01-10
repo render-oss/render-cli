@@ -50,7 +50,7 @@ jobs:
       # we need to remove the 'v' from this, choco doesn't like it
       - name: Get the version for later
         id: get_version
-        run: echo ${GITHUB_REF/refs\/tags\/v/} >> $GITHUB_OUTPUT
+        run: echo "PACKAGE_VERSION=${GITHUB_REF/refs\/tags\/v/}"" >> $GITHUB_OUTPUT
       - name: Check out code
         uses: actions/checkout@v2
       - name: Create temp directories
