@@ -68,6 +68,8 @@ jobs:
       - name: output templated nuspec
         run:
           cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > ./tmp/nupkg/render-cli.nuspec
+      - name: show templated nuspec
+        run: cat ./tmp/nupkg/render-cli.nuspec
       - name: enumerating nupkg files
         run: find ./tmp/nupkg
       - name: pack nupkg
