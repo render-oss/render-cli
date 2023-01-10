@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>render-cli</id>
+    <version>NUSPEC_PACKAGE_VERSION</version>
+    <packageSourceUrl>https://github.com/render-oss/render-cli</packageSourceUrl>
+    <owners>Render Inc.</owners>
+
+    <title>Render CLI</title>
+    <authors>Render Inc.</authors>
+    <projectUrl>https://github.com/render-oss/render-cli</projectUrl>
+    <copyright>2023</copyright>
+    <licenseUrl>https://github.com/render-oss/render-cli/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/render-oss/render-cli</projectSourceUrl>
+    <docsUrl>https://render.com/docs</docsUrl>
+    <bugTrackerUrl>https://github.com/render-oss/render-cli</bugTrackerUrl>
+    <tags>render cloud paas</tags>
+    <summary>Launch your next project into the cloud with Render</summary>
+    <description>
+      Render is a unified cloud to build and run all your apps and websites with free TLS certificates, a global CDN, DDoS protection, private networks, and auto deploys from Git.
+
+      By using our command-line tools you'll be able to quickly kick off new projects from scratch or from our library of examples. Once you're live, you can also use the Render CLI to get information about the state of your infrastructure and to make changes as you see fit.
+    </description>
+  </metadata>
+  <files>
+    <file src="./render.exe" target="render.exe" />
+    <file src="./tools/**" target="tools" />
+  </files>
+</package>
