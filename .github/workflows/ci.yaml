@@ -69,7 +69,7 @@ jobs:
       - name: output templated nuspec
         uses: edgardleal/mustache-template-action@v1.0.0
         env:
-          PACKAGE_VERSION: ${{ get_version.PACKAGE_VERSION }}
+          PACKAGE_VERSION: ${{ steps.get_version.PACKAGE_VERSION }}
         with:
           input: ./_build/nupkg/render-cli.nuspec.template
           output: /tmp/nupkg/render-cli.nuspec
