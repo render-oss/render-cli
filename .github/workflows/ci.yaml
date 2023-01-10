@@ -68,7 +68,7 @@ jobs:
           cp -r ./_build/nupkg/tools /tmp/nupkg/tools
       - name: output templated nuspec
         run:
-          cat ./_build/nupkg/render-cli.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > /tmp/nupkg/render-cli.nuspec
+          cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${{ steps.get_version.PACKAGE_VERSION }}/g" > /tmp/nupkg/render-cli.nuspec
       - name: pack nuspec
         uses: crazy-max/ghaction-chocolatey@v2
         with:
