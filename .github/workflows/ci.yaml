@@ -110,4 +110,20 @@ jobs:
             LICENSE
             README.md
   
+  push-nupkg:
+    runs-on: ubuntu-latest
+    needs:
+      - make-release
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: nupkg
+          path: ./tmp/nupkg
+      - name: rename nupkg for action
+        run: cp ./tmp/nupkg/render-cli.${GITHUB_REF/refs\/tags\/v/}.nupkg ./tmp/nupkg/render-cli.nupkg
+      - name: "push nupkg to chocolatey"
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: push --key ${{ secrets.CHOCOLATEY_APIKEY }} --source https://push.chocolatey.org ./tmp/nupkg/render-cli.nupkg
   
