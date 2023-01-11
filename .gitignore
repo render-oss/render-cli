@@ -15,6 +15,7 @@ node_modules/
 /bin
 render
 render-*
+!render-cli.nuspec.template
 
 # this is now automatically updated
 version.ts

@@ -42,23 +42,72 @@ jobs:
           name: render-binaries
           path: /tmp/render-*
 
-  make-release:
+  make-nupkg:
     runs-on: ubuntu-latest
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
     steps:
+      # we need to remove the 'v' from this, choco doesn't like it
       - name: Check out code
         uses: actions/checkout@v2
-      - run: mkdir -p /tmp/artifacts
+      - name: Create temp directories
+        run:
+          mkdir -p ./tmp/artifacts ./tmp/nupkg
+      - uses: actions/download-artifact@v3
+        with:
+          name: render-binaries
+          path: ./tmp/artifacts
+      - name: Prep executable
+        run: cp ./tmp/artifacts/render-windows-x86_64.exe ./tmp/nupkg/render.exe
+      - name: copy tools to nupkg
+        run:
+          cp -r ./_build/nupkg/tools ./tmp/nupkg/tools
+      - name: output templated nuspec
+        run:
+          cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${GITHUB_REF/refs\/tags\/v/}/g" > ./tmp/nupkg/render-cli.nuspec
+      - name: show templated nuspec
+        run: cat ./tmp/nupkg/render-cli.nuspec
+      - name: enumerating nupkg files
+        run: find ./tmp/nupkg
+      - name: pack nupkg
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: pack ./tmp/nupkg/render-cli.nuspec
+      - name: check for nupkg
+        run: ls . && find ./tmp
+      - name: uploading nupkg
+        uses: actions/upload-artifact@v2
+        # if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: nupkg
+          path: ./render-cli.*.nupkg
+
+  make-release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - make-nupkg
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - run: mkdir -p /tmp/artifacts /tmp/nupkg
       - uses: actions/download-artifact@v3
         with:
           name: render-binaries
           path: /tmp/artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: nupkg
+          path: /tmp/nupkg
       - name: Do GitHub release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           files: |
             /tmp/artifacts/*
+            /tmp/nupkg/*
             LICENSE
             README.md
+  
+  
