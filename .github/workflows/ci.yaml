@@ -64,15 +64,15 @@ jobs:
           cp -r ./_build/nupkg/tools ./tmp/nupkg/tools
       - name: output templated nuspec
         run:
-          cat ./_build/nupkg/render-cli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${GITHUB_REF/refs\/tags\/v/}/g" > ./tmp/nupkg/render-cli.nuspec
+          cat ./_build/nupkg/rendercli.nuspec.template | sed "s/NUSPEC_PACKAGE_VERSION/${GITHUB_REF/refs\/tags\/v/}/g" > ./tmp/nupkg/rendercli.nuspec
       - name: show templated nuspec
-        run: cat ./tmp/nupkg/render-cli.nuspec
+        run: cat ./tmp/nupkg/rendercli.nuspec
       - name: enumerating nupkg files
         run: find ./tmp/nupkg
       - name: pack nupkg
         uses: crazy-max/ghaction-chocolatey@v2
         with:
-          args: pack ./tmp/nupkg/render-cli.nuspec
+          args: pack ./tmp/nupkg/rendercli.nuspec
       - name: check for nupkg
         run: ls . && find ./tmp
       - name: uploading nupkg
@@ -80,7 +80,7 @@ jobs:
         # if: startsWith(github.ref, 'refs/tags/')
         with:
           name: nupkg
-          path: ./render-cli.*.nupkg
+          path: ./rendercli.*.nupkg
 
   make-release:
     runs-on: ubuntu-latest
@@ -121,9 +121,9 @@ jobs:
           name: nupkg
           path: ./tmp/nupkg
       - name: rename nupkg for action
-        run: cp ./tmp/nupkg/render-cli.${GITHUB_REF/refs\/tags\/v/}.nupkg ./tmp/nupkg/render-cli.nupkg
+        run: cp ./tmp/nupkg/rendercli.${GITHUB_REF/refs\/tags\/v/}.nupkg ./tmp/nupkg/rendercli.nupkg
       - name: "push nupkg to chocolatey"
         uses: crazy-max/ghaction-chocolatey@v2
         with:
-          args: push --key ${{ secrets.CHOCOLATEY_APIKEY }} --source https://push.chocolatey.org ./tmp/nupkg/render-cli.nupkg
+          args: push --key ${{ secrets.CHOCOLATEY_APIKEY }} --source https://push.chocolatey.org ./tmp/nupkg/rendercli.nupkg
   
