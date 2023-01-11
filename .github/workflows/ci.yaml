@@ -75,6 +75,12 @@ jobs:
           args: pack ./tmp/nupkg/render-cli.nuspec
       - name: check for nupkg
         run: ls . && find ./tmp
+      - name: uploading nupkg
+        uses: actions/upload-artifact@v2
+        # if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: nupkg
+          path: ./render-cli.*.nupkg
 
   make-release:
     runs-on: ubuntu-latest
@@ -85,17 +91,22 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - run: mkdir -p /tmp/artifacts
+      - run: mkdir -p /tmp/artifacts /tmp/nupkg
       - uses: actions/download-artifact@v3
         with:
           name: render-binaries
           path: /tmp/artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: nupkg
+          path: /tmp/nupkg
       - name: Do GitHub release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           files: |
             /tmp/artifacts/*
+            /tmp/nupkg/*
             LICENSE
             README.md
   
