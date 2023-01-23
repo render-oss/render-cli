@@ -1,9 +1,14 @@
-import { RuntimeConfiguration } from "./config/types/index.ts";
 import { Typebox } from "./deps.ts";
 import { ajv } from './util/ajv.ts';
 
 export class RenderCLIError extends Error {
 
+}
+
+export class InitRequiredError extends RenderCLIError {
+  constructor(msg: string) {
+    super(`${msg}; run 'render config init' to create a config file.`);
+  }
 }
 
 export class ForceRequiredError extends RenderCLIError {

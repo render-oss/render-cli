@@ -1,4 +1,5 @@
 import { Subcommand } from "../_helpers.ts";
+import { configAddProfileCommand } from "./add-profile.ts";
 import { configInitCommand } from "./init.ts";
 import { configSchemaCommand } from "./schema.ts";
 
@@ -13,6 +14,7 @@ export const configCommand =
       this.showHelp();
       Deno.exit(1);
     })
-    .command("schema", configSchemaCommand)
     .command("init", configInitCommand)
+    .command("add-profile", configAddProfileCommand)
+    .command("schema", configSchemaCommand)
     ;
