@@ -4,6 +4,13 @@
 ### The easy way: getting releases ###
 You can download a platform-specific build of `render-cli` from the [releases page](https://github.com/render-oss/render-cli/releases).
 
+### The easy way for OSX users: homebrew ###
+```bash
+brew tap render-oss/render
+brew install render
+```
+See [render-oss/homebrew-render](https://github.com/render-oss/homebrew-render) for more details.
+
 ### The less-easy-but-still-easy way: getting builds from `main` ###
 If you head to [GitHub Actions](https://github.com/render-oss/render-cli/actions) and click a passing build, you can download the latest artifacts at the bottom of the page.
 
