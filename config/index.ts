@@ -1,4 +1,4 @@
-import { YAML,  } from "../deps.ts";
+import { Log, YAML, } from "../deps.ts";
 import { ajv } from "../util/ajv.ts";
 import { identity } from "../util/fn.ts";
 import { getPaths } from "../util/paths.ts";
@@ -7,6 +7,7 @@ import { APIKeyRequired } from '../errors.ts';
 import { ALL_REGIONS, Region } from "./types/enums.ts";
 import { assertValidRegion } from "./types/enums.ts";
 import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
+import { getLogger } from "../util/logging.ts";
 
 let config: RuntimeConfiguration | null = null;
 
@@ -27,7 +28,7 @@ export async function getConfig(): Promise<RuntimeConfiguration> {
   if (config === null) {
     const cfg = await fetchAndParseConfig();
 
-    const runtimeProfile = buildRuntimeProfile(cfg);
+    const runtimeProfile = await buildRuntimeProfile(cfg);
     const ret: RuntimeConfiguration = {
       fullConfig: cfg,
       ...runtimeProfile,
@@ -87,8 +88,13 @@ async function fetchAndParseConfig(): Promise<ConfigLatest> {
   }
 }
 
-function buildRuntimeProfile(cfg: ConfigLatest): { profile: ProfileLatest, profileName: string } {
-  const profileName = Deno.env.get("RENDERCLI_PROFILE") ?? 'default';
+async function buildRuntimeProfile(
+  cfg: ConfigLatest,
+): Promise<{ profile: ProfileLatest, profileName: string }> {
+  const logger = await getLogger();
+  const profileFromEnv = Deno.env.get("RENDERCLI_PROFILE");
+  const profileName = profileFromEnv ?? 'default';
+  logger.debug(`Using profile '${profileName}' (env: ${profileFromEnv})`);
   const profile = cfg.profiles[profileName] ?? {};
 
   const ret: ProfileLatest = {

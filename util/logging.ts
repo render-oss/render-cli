@@ -8,12 +8,18 @@ let PRETTY_JSON = false;
 let JSON_RECORD_PER_LINE = false;
 export let NON_INTERACTIVE = !Deno.isatty(Deno.stdout.rid);
 
-export function verboseLogging() {
+export async function verboseLogging() {
   if (isLoggingSetup) {
     Log.getLogger().warning("`verboseLogging` called after logging setup.");
   }
 
+  // Deno's log function may be already called when these methods are called
+  // because the CLI framework doesn't seem consistent in what order it calls
+  // the `action` parameter for global options, so as a compromise we blow away
+  // the existing logging config and re-instantiate.
   LOG_VERBOSITY = 'DEBUG'
+  isLoggingSetup = false;
+  await setupLogging();
 }
 
 export function nonInteractive() {
