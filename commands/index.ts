@@ -1,7 +1,6 @@
 import { Cliffy } from '../deps.ts';
 
-import { jsonRecordPerLine, nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
-import { VERSION } from "../version.ts";
+import { getLogger, jsonRecordPerLine, nonInteractive, prettyJson, verboseLogging } from "../util/logging.ts";
 import { blueprintCommand } from "./blueprint/index.ts";
 import { buildpackCommand } from './buildpack/index.ts';
 import { commandsCommand } from "./commands.ts";
@@ -15,6 +14,7 @@ import { jobsCommand } from "./jobs/index.ts";
 import { versionCommand } from './version.ts';
 import { dashboardCommand } from './dashboard.ts';
 import { getPaths, pathExists } from '../util/paths.ts';
+import { funcError } from "../util/errors.ts";
 
 
 export const ROOT_COMMAND =
@@ -31,23 +31,55 @@ export const ROOT_COMMAND =
       "--non-interactive",
       "Forces Render to act as though it's not in a TTY.",
       {
-        action: () => nonInteractive(),
+        action: async (opts) => {
+          (await getLogger()).debug("--non-interactive", opts);
+          nonInteractive();
+        },
       })
     .globalOption(
       "--pretty-json",
       "If in non-interactive mode, prints prettified JSON.",
       {
-        action: () => prettyJson(),
+        action: async (opts) => {
+          (await getLogger()).debug("--pretty-json", opts);
+          prettyJson();
+        },
       })
     .globalOption(
       "--json-record-per-line",
       "if emitting JSON, prints each JSON record as a separate line of stdout.",
       {
-        action: () => jsonRecordPerLine(),
+        action: async (opts) => {
+          (await getLogger()).debug("--json-record-per-line", opts);
+          jsonRecordPerLine();
+        },
         conflicts: ["pretty-json"],
       })
-    .globalOption("-p, --profile <profileName>", "The Render profile to use for this invocation. Overrides RENDERCLI_PROFILE.")
-    .globalOption("-r, --region <regionName>", "The Render region to use for this invocation; always accepted but not always relevant. Overrides RENDERCLI_REGION.")
+    .globalOption(
+      "-p, --profile <profileName>",
+      "The Render profile to use for this invocation. Overrides RENDERCLI_PROFILE.",
+      {
+        action: async (opts) => {
+          (await getLogger()).debug("--profile", opts);
+          Deno.env.set(
+            "RENDERCLI_PROFILE",
+            opts.profile || funcError(new Error("--profile passed but no argument received")),
+          );
+        },
+      }
+    )
+    .globalOption(
+      "-r, --region <regionName>",
+      "The Render region to use for this invocation; always accepted but not always relevant. Overrides RENDERCLI_REGION.",
+      {
+        action: async (opts) => {
+          (await getLogger()).debug("--region", opts);
+          Deno.env.set(
+            "RENDERCLI_REGION",
+            opts.region || funcError(new Error("--region passed but no argument received")),
+          );
+        },
+      })
     .action(async function() {
       const { configFile } = await getPaths();
 
