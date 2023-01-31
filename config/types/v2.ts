@@ -11,7 +11,7 @@ export const APIKeyV2 = Type.String({
 export type APIKeyV2 = Static<typeof APIKeyV2>;
 
 export const APIKeyGetCommand = Type.Object({
-  run: Type.String({
+  run: Type.Array(Type.String(), {
     description: 'A command to execute to get the API key. The command should output the API key to stdout.'
   }),
 });

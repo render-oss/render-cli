@@ -1,12 +1,12 @@
 import { Log, YAML, } from "../deps.ts";
 import { ajv } from "../util/ajv.ts";
 import { getPaths } from "../util/paths.ts";
-import { APIKeyRequired } from '../errors.ts';
+import { APIKeyRequired, RenderCLIError } from '../errors.ts';
 
 import { ALL_REGIONS, Region } from "./types/enums.ts";
 import { assertValidRegion } from "./types/enums.ts";
-import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
-import { getLogger } from "../util/logging.ts";
+import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration, RuntimeProfile } from "./types/index.ts";
+import { getLogger, NON_INTERACTIVE } from "../util/logging.ts";
 
 const CONFIG_VERSION_WARN_ENV_VAR = "RENDERCLI_CONFIG_IGNORE_UPGRADE";
 
@@ -28,7 +28,7 @@ const FALLBACK_PROFILE: Partial<ProfileLatest> = {
   defaultRegion: 'oregon', // mimics dashboard behavior
 };
 
-const FALLBACK_CONFIG: ConfigLatest = {
+export const FALLBACK_CONFIG: ConfigLatest = {
   version: 2,
   profiles: {},
 }
@@ -105,27 +105,58 @@ async function fetchAndParseConfig(): Promise<ConfigLatest> {
   }
 }
 
+async function getProfileCredentials(profile: ProfileLatest): Promise<string> {
+  const apiKeyOverride = await Deno.env.get("RENDERCLI_APIKEY");
+
+  if (apiKeyOverride) {
+    return apiKeyOverride;
+  }
+
+  if (typeof(profile.apiKey) === 'string') {
+    return profile.apiKey;
+  }
+
+  const cmd = profile.apiKey.run;
+
+  const process = Deno.run({
+    cmd,
+    stdout: 'piped',
+    stderr: 'inherit',
+    stdin: NON_INTERACTIVE ? 'null' : 'inherit',
+  });
+
+  const { code } = await process.status();
+  if (code != 0) {
+    throw new RenderCLIError(`CLI credentials runner failed. \`${cmd.join(' ')}\` exit code: ${code}`);
+  }
+
+  const output = await process.output();
+  const decoder = new TextDecoder();
+  const apiKey = decoder.decode(output).trim();
+
+  return apiKey;
+}
+
 async function buildRuntimeProfile(
   cfg: ConfigLatest,
-): Promise<{ profile: ProfileLatest, profileName: string }> {
+): Promise<{ profile: RuntimeProfile, profileName: string }> {
   const logger = await getLogger();
-  const profileFromEnv = Deno.env.get("RENDERCLI_PROFILE");
+  const profileFromEnv = await Deno.env.get("RENDERCLI_PROFILE");
   const profileName = profileFromEnv ?? 'default';
   logger.debug(`Using profile '${profileName}' (env: ${profileFromEnv})`);
   const profile = cfg.profiles[profileName] ?? {};
 
-  const ret: ProfileLatest = {
+  const ret: RuntimeProfile = {
     ...FALLBACK_PROFILE,
     ...profile,
-  }
+    apiKey: await getProfileCredentials(profile),
+    apiHost: await Deno.env.get("RENDERCLI_APIHOST") ?? profile.apiHost,
+  };
 
-  const actualRegion = Deno.env.get("RENDERCLI_REGION") ?? ret.defaultRegion;
+  const actualRegion = await Deno.env.get("RENDERCLI_REGION") ?? ret.defaultRegion;
   assertValidRegion(actualRegion);
   // TODO: clean this up - the assertion should be making the cast unnecessary, but TS disagrees
   ret.defaultRegion = actualRegion as Region;
-
-  ret.apiKey = Deno.env.get("RENDERCLI_APIKEY") ?? ret.apiKey;
-  ret.apiHost = Deno.env.get("RENDERCLI_APIHOST") ?? ret.apiHost;
 
   if (!ret.apiKey) {
     throw new APIKeyRequired();

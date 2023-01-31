@@ -18,8 +18,12 @@ export const ProfileLatest = ProfileV2;
 
 export type UpgradeFn<T> = (cfg: T) => ConfigLatest;
 
+export type RuntimeProfile =
+  & Omit<ProfileLatest, 'apiKey'>
+  & { apiKey: string };
+
 export type RuntimeConfiguration = {
   fullConfig: ConfigLatest;
   profileName: string;
-  profile: ProfileLatest;
+  profile: RuntimeProfile;
 }
