@@ -1,6 +1,5 @@
 import { Log, YAML, } from "../deps.ts";
 import { ajv } from "../util/ajv.ts";
-import { identity } from "../util/fn.ts";
 import { getPaths } from "../util/paths.ts";
 import { APIKeyRequired } from '../errors.ts';
 
@@ -9,18 +8,28 @@ import { assertValidRegion } from "./types/enums.ts";
 import { ConfigAny, ConfigLatest, ProfileLatest, RuntimeConfiguration } from "./types/index.ts";
 import { getLogger } from "../util/logging.ts";
 
+const CONFIG_VERSION_WARN_ENV_VAR = "RENDERCLI_CONFIG_IGNORE_UPGRADE";
+
 let config: RuntimeConfiguration | null = null;
 
-// TODO: smarten this up with type checks
-const CONFIG_UPGRADE_MAPS = {
-  1: identity,
+function upgradeConfigs(cfg: ConfigAny): ConfigLatest {
+  switch (cfg.version) {
+    case 1:
+      return {
+        ...cfg,
+        version: 2,
+      };
+    case 2: // == ConfigLatest
+      return cfg;
+  }
 }
+
 const FALLBACK_PROFILE: Partial<ProfileLatest> = {
   defaultRegion: 'oregon', // mimics dashboard behavior
 };
 
 const FALLBACK_CONFIG: ConfigLatest = {
-  version: 1,
+  version: 2,
   profiles: {},
 }
 
@@ -46,16 +55,6 @@ export async function withConfig<T>(fn: (cfg: RuntimeConfiguration) => T | Promi
   return fn(cfg);
 }
 
-function upgradeConfigFile(config: ConfigAny): ConfigLatest {
-  const upgradePath = CONFIG_UPGRADE_MAPS[config.version];
-
-  if (!upgradePath) {
-    throw new Error(`Unrecognized version, cannot upgrade (is render-cli too old?): ${config.version}`);
-  }
-
-  return upgradePath(config);
-}
-
 async function parseConfig(content: string): Promise<ConfigLatest> {
   const data = await YAML.load(content);
   const ret = {
@@ -66,7 +65,25 @@ async function parseConfig(content: string): Promise<ConfigLatest> {
 
   await ajv.validate(ConfigAny, ret);
   if (!ajv.errors) {
-    return upgradeConfigFile(ret as ConfigAny);
+    const upgraded = upgradeConfigs(ret as ConfigAny);
+
+    if (ret.version !== upgraded.version) {
+      const warnOnUpgrade = await Deno.env.get(CONFIG_VERSION_WARN_ENV_VAR);
+      if (warnOnUpgrade !== '1') {
+        const logger = await getLogger();
+        logger.warning('Your Render CLI configuration file appears to be out of date. We don\'t upgrade your');
+        logger.warning('configuration file automatically in case you need to revert to an older version, but');
+        logger.warning('we also can\'t guarantee permanent forward compatibility for old configuration files.');
+        logger.warning('');
+        logger.warning('Please run `render config upgrade` to update it automatically to the most recent');
+        logger.warning('configuration file format.');
+        logger.warning('');
+        logger.warning('If you don\'t want to upgrade and don\'t want to see this message, you can set the');
+        logger.warning(`${CONFIG_VERSION_WARN_ENV_VAR} environment variable to "1".`);
+      }
+    }
+
+    return upgraded;
   }
 
   throw new Error(`Config validation error: ${Deno.inspect(ajv.errors)}`);
