@@ -15,6 +15,7 @@ import { versionCommand } from './version.ts';
 import { dashboardCommand } from './dashboard.ts';
 import { getPaths, pathExists } from '../util/paths.ts';
 import { funcError } from "../util/errors.ts";
+import { docsCommand } from './docs.ts';
 
 async function emitHello() {
   const { configFile } = await getPaths();
@@ -142,7 +143,7 @@ export const ROOT_COMMAND =
     .command("config", configCommand)
     .command("regions", regionsCommand)
     .command("dashboard", dashboardCommand)
-
+    .command("docs", docsCommand)
     .command("repo", repoCommand)
     .command("blueprint", blueprintCommand)
     .command("buildpack", buildpackCommand)
