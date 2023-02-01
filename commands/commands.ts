@@ -1,9 +1,8 @@
-import { ALL_REGIONS } from "../config/types/enums.ts";
-import { Cliffy } from "../deps.ts";
-import { getLogger, renderJsonOutput } from "../util/logging.ts";
+import { Cliffy, CliffyCommand, sortBy } from "../deps.ts";
+import { renderJsonOutput } from "../util/logging.ts";
 import { standardAction, Subcommand } from "./_helpers.ts";
 
-const desc = 
+const desc =
 `Lists all commands and subcommands.`;
 
 type CmdInfo = {
@@ -11,52 +10,65 @@ type CmdInfo = {
   shortDesc: string;
 }
 
+type CmdTreeNode = {
+  name: string;
+  description: string;
+  subcommands: Array<CmdTreeNode>;
+}
+
 export const commandsCommand =
   new Subcommand()
     .name('commands')
     .description(desc)
     .action(function () {
-      const rootCommand = this.getGlobalParent();
-
       return standardAction({
         processing: (logger) => {
-  
-          const result: Array<CmdInfo> = [];
-          
-          function listCommands(cmd: typeof rootCommand, cmdPath: Array<string> = []) {
-            if (!cmd) {
-              logger.debug(`${cmdPath.join('/')}: child was falsy?`);
-              return;
-            }
-  
-            const p = [...cmdPath, cmd.getName()];
-  
-            const fullName = p.join(' ');
-            const shortDesc = cmd.getShortDescription();
+          // TODO: some odd typing here. are the Deno imports correct?
+          const rootCommand = this.getGlobalParent() as CliffyCommand;
 
-            if (cmd !== rootCommand) {
-              result.push({ fullName, shortDesc });
+          function listCommands(cmd: CliffyCommand): CmdTreeNode {
+            if (!cmd) {
+              logger.debug("can't happen: command was falsy in 'render commands'?");
+              throw new Error();
             }
-  
-            for (const subcommand of cmd.getCommands(false)) {
-              listCommands(subcommand, p);
+
+            const subcommands = sortBy(
+              cmd.getCommands(false).map(subcmd => listCommands(subcmd)),
+              (i: CmdTreeNode) => i.name,
+            );
+
+            const ret: CmdTreeNode = {
+              name: cmd.getName(),
+              description: cmd.getDescription().split("\n")[0].trim(),
+              subcommands,
             }
+
+            return ret;
           }
-  
-          listCommands(rootCommand);
-  
-          return result;
+
+          return listCommands(rootCommand);
         },
         interactive: (result, _logger) => {
-          for (const item of result) {
-            const str = [
-              Cliffy.colors.brightCyan(item.fullName),
-              " - ",
-              item.shortDesc,
-            ].join('');
+          function printCommand(cmd: CmdTreeNode, cmdPath: Array<string> = [], indent = "") {
+            if (cmdPath.length !== 0) {
+              const precedingPath = Cliffy.colors.cyan(cmdPath.join(" "));
+              const currentNode = Cliffy.colors.brightWhite(cmd.name);
+              console.log(`${indent}${precedingPath} ${currentNode}: ${cmd.description}`);
+            }
 
-            console.log(str);
+            cmd.subcommands.forEach(subcmd => {
+              printCommand(
+                subcmd,
+                [...cmdPath, cmd.name],
+                indent + (cmdPath.length === 0 ? '' : ' \\- '),
+              );
+            });
           }
+
+          printCommand(result);
+          console.log();
+          console.log(`Remember that you can always pass ${Cliffy.colors.brightWhite('--help')} to any command (for example,`);
+          console.log(`${Cliffy.colors.cyan("render services tail --help")}) to see more information about it.`);
         },
         nonInteractive: (result) => {
           renderJsonOutput(result);
