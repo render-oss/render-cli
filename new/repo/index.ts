@@ -62,8 +62,8 @@ export async function templateNewProject(args: TemplateNewProjectArgs): Promise<
     logger.debug("CWD:", Deno.cwd());
     logger.debug(`Attempting to resolve template '${args.identifier}'.`);
     const locator = resolveTemplateIdentifier(args.identifier);
-    
-    logger.info(`Ensuring repo is a valid Render template: ${Deno.inspect(locator)}`);
+
+    logger.debug(`Ensuring repo is a valid Render template: ${Deno.inspect(locator)}`);
     await ensureRepoIsValid(locator);
 
     if (!args.outputDir) {
@@ -85,15 +85,25 @@ export async function templateNewProject(args: TemplateNewProjectArgs): Promise<
       throw new ForceRequiredError(`'${args.outputDir}' already exists`);
     }
 
-    logger.info(`Initializing your project at '${args.outputDir}'...`);
+    logger.debug(`Initializing your project at '${args.outputDir}'...`);
     await downloadRepo(locator, tempDir, args.outputDir, args.force);
 
     // TODO: much like degit, do we want to offer customization steps per-template?
     //       this could be a separate yaml file in the repo, deleted once the repo
     //       is instantiated
 
-    logger.info(`Done! Your project's now ready to use at ${args.outputDir}`)
-    logger.info("Thanks for using Render!");
+    console.log(`🎉 Done! 🎉 Your project's now ready to use! Just`);
+    console.log("");
+    console.log(Cliffy.colors.brightYellow(`cd ${args.outputDir}`));
+    console.log("");
+    console.log("and you're good to go!");
+    console.log("");
+    console.log(Cliffy.colors.brightWhite("Now that you have a new project set up, you'll need to push to GitHub or GitLab"))
+    console.log(`${Cliffy.colors.brightWhite("in order to deploy it to Render")}. Once you've followed the instructions`);
+    console.log(`provided when you create your repo in GitHub or GitLab, you can then run`);
+    console.log(`${Cliffy.colors.cyan("render buildpack launch")} to easily deploy your project to Render.`);
+    console.log("");
+    console.log("Thanks for using Render, and good luck with your new project!");
   } finally {
     if (!args.skipCleanup) {
       await Deno.remove(tempDir, { recursive: true });
@@ -125,7 +135,7 @@ async function ensureRepoIsValid(loc: Locator) {
 // user time.
 async function downloadRepo(loc: Locator, tempDir: string, outDir: string, force?: boolean): Promise<void> {
   const logger = await getLogger();
-  
+
   switch (loc.provider) {
     case 'github': {
       const tarballUrl = [GITHUB_REPO_API_BASE, loc.user, loc.repo, loc.gitref, 'tarball'].filter(identity).join('/');
