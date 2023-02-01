@@ -4,8 +4,10 @@ import { gitUrlToHttpsUrl, listRemotes } from "../../util/git.ts";
 import { RenderCLIError } from "../../errors.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 
-const desc = 
-`Opens the browser-based Render Deploy for the \`origin\` upstream for the repo (for the current working directory) or a remote repo that you've specified.
+const desc =
+`Opens Render Deploy for this repo.
+
+This will open Render Deploy for the \`origin\` upstream for the repo (for the current working directory) or a remote repo that you've specified. You must have created a GitHub or GitLab repo and pushed to it for this to work!
 
 If it can't open your browser, it'll provide you a link instead.
 
@@ -42,11 +44,11 @@ export const blueprintLaunchCommand =
         } else {
           logger.info(`Taking you to the deploy page: ${httpsGitUrl}`);
           await sleep(1);
-          
+
           const p = await openAWebsite(httpsGitUrl);
 
           if (!(await p.status()).success) {
-            logger.error(`Could not automatically open browser. Please navigate to this URL directly: ${httpsGitUrl}`); 
+            logger.error(`Could not automatically open browser. Please navigate to this URL directly: ${httpsGitUrl}`);
           }
         }
       },

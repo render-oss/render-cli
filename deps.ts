@@ -2,6 +2,9 @@ export * as Path from "https://deno.land/std@0.151.0/path/mod.ts";
 export * as FS from "https://deno.land/std@0.151.0/fs/mod.ts";
 export * as Log from "https://deno.land/std@0.151.0/log/mod.ts";
 export * as QueryString from "https://deno.land/x/querystring@v1.0.2/mod.js";
+export {
+  sortBy
+} from "https://raw.githubusercontent.com/lodash/lodash/4.17.21-es/lodash.js";
 
 export { Type, type Static } from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
 export * as Typebox from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
@@ -11,6 +14,7 @@ export { default as AjvFormats } from "https://esm.sh/v86/ajv-formats@2.1.1";
 
 import * as _Cliffy from "https://deno.land/x/cliffy@v0.25.6/mod.ts";
 export const Cliffy = _Cliffy;
+export type CliffyCommand = _Cliffy.Command;
 
 export { default as stripIndent } from "https://esm.sh/v86/strip-indent@4.0.0";
 export { default as YAML } from "https://esm.sh/v86/js-yaml@4.1.0";

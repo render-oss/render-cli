@@ -3,23 +3,23 @@ import { Log, openAWebsite } from "../deps.ts";
 import { standardAction, Subcommand } from "./_helpers.ts";
 
 const desc =
-`Opens the Render dashboard in your browser.`;
+`Opens the Render docs in your browser.`;
 
-export const dashboardCommand =
+export const docsCommand =
   new Subcommand()
-    .name('dashboard')
+    .name('docs')
     .description(desc)
-    .option("-l, --link", "Prints out the Render Dashboard URL rather than attempting to open it.")
+    .option("-l, --link", "Prints out the Render Docs URL rather than attempting to open it.")
     .arguments<[string]>("[path:string]")
     .action((opts, path) => standardAction({
       processing: () => {
-        return `https://rndr.in/c/dashboard`;
+        return `https://rndr.in/c/docs`;
       },
       interactive: async (url: string, logger: Log.Logger) => {
         if (opts.link) {
           console.log(url);
         } else {
-          logger.info(`Taking you to the dashboard: ${url}`);
+          logger.info(`Taking you to the Render docs: ${url}`);
           await sleep(1);
 
           const p = await openAWebsite(url);

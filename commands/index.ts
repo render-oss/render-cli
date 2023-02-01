@@ -15,7 +15,43 @@ import { versionCommand } from './version.ts';
 import { dashboardCommand } from './dashboard.ts';
 import { getPaths, pathExists } from '../util/paths.ts';
 import { funcError } from "../util/errors.ts";
+import { docsCommand } from './docs.ts';
 
+async function emitHello() {
+  const { configFile } = await getPaths();
+
+  console.log("render-cli is the command line interface for Render. The goal for");
+  console.log("this application is to make it easier to interact with Render in");
+  console.log("a programmatic way. It's also a good way to learn about the Render");
+  console.log("API and what's available in the programming language of your choice.");
+
+  if (!await pathExists(configFile)) {
+    console.log();
+    console.log(`To get started, run ${Cliffy.colors.cyan('render config init')} to create a configuration file.`);
+  }
+
+  console.log();
+  console.log("We're always adding more functionality to the Render CLI. Here are some");
+  console.log("common commands you might want to try:");
+  console.log();
+  console.log(`- ${Cliffy.colors.cyan('render repo from-template')} instantiates a new project from an example`);
+  console.log(`  in the Render example library at [ https://github.com/render-examples ].`);
+  console.log(`- ${Cliffy.colors.cyan('render blueprint launch')} helps deploy the git repository you're in to`);
+  console.log(`  Render, using the blueprint in the repository.`);
+  console.log(`- ${Cliffy.colors.cyan('render services ssh')} helps you connect to a service's shell.`);
+  console.log(`- ${Cliffy.colors.cyan('render services tail')} lets you stream a service's logs as they happen.`);
+  console.log(`- ${Cliffy.colors.cyan('render buildpack')} helps you manage the buildpacks used in services`);
+  console.log(`  created by the Render Heroku importer or explicitly instantiated via`);
+  console.log(`  ${Cliffy.colors.cyan('render buildpack init')}.`);
+  console.log(`- ${Cliffy.colors.cyan('render commands')} will give you a full list of all commands in the Render`);
+  console.log(`  CLI, and ${Cliffy.colors.cyan('render <command> --help')} will give you more details on a given`);
+  console.log(`  command.`);
+
+  console.log();
+  console.log(`You can also run ${Cliffy.colors.cyan('render --help')} for a more structured help file.`);
+  console.log();
+  console.log("Thanks for using Render!");
+}
 
 export const ROOT_COMMAND =
   (new Cliffy.Command())
@@ -80,41 +116,26 @@ export const ROOT_COMMAND =
           );
         },
       })
+    .helpOption(false)
+    .option(
+      "-h, --help",
+      "Shows help for this command.",
+      {
+        action: async function() {
+          const { configFile } = await getPaths();
+
+          if (!await pathExists(configFile)) {
+            await emitHello();
+          } else {
+            this.showHelp();
+          }
+
+          Deno.exit(1);
+        },
+      },
+    )
     .action(async function() {
-      const { configFile } = await getPaths();
-
-      console.log("render-cli is the command line interface for Render. The goal for");
-      console.log("this application is to make it easier to interact with Render in");
-      console.log("a programmatic way. It's also a good way to learn about the Render");
-      console.log("API and what's available in the programming language of your choice.");
-
-      if (!await pathExists(configFile)) {
-        console.log();
-        console.log(`To get started, run ${Cliffy.colors.cyan('render config init')} to create a configuration file.`);
-      }
-
-      console.log();
-      console.log("We're always adding more functionality to the Render CLI. Here are some");
-      console.log("common commands you might want to try:");
-      console.log();
-      console.log(`- ${Cliffy.colors.cyan('render repo from-template')} instantiates a new project from an example`);
-      console.log(`  in the Render example library at [ https://github.com/render-examples ].`);
-      console.log(`- ${Cliffy.colors.cyan('render blueprint launch')} helps deploy the git repository you're in to`);
-      console.log(`  Render, using the blueprint in the repository.`);
-      console.log(`- ${Cliffy.colors.cyan('render services ssh')} helps you connect to a service's shell.`);
-      console.log(`- ${Cliffy.colors.cyan('render services tail')} lets you stream a service's logs as they happen.`);
-      console.log(`- ${Cliffy.colors.cyan('render buildpack')} helps you manage the buildpacks used in services`);
-      console.log(`  created by the Render Heroku importer or explicitly instantiated via`);
-      console.log(`  ${Cliffy.colors.cyan('render buildpack init')}.`);
-      console.log(`- ${Cliffy.colors.cyan('render commands')} will give you a full list of all commands in the Render`);
-      console.log(`  CLI, and ${Cliffy.colors.cyan('render <command> --help')} will give you more details on a given`);
-      console.log(`  command.`);
-
-      console.log();
-      console.log(`You can also run ${Cliffy.colors.cyan('render --help')} for a more structured help file.`);
-      console.log();
-      console.log("Thanks for using Render!");
-
+      await emitHello();
       Deno.exit(1);
     })
     .command("version", versionCommand)
@@ -122,7 +143,7 @@ export const ROOT_COMMAND =
     .command("config", configCommand)
     .command("regions", regionsCommand)
     .command("dashboard", dashboardCommand)
-
+    .command("docs", docsCommand)
     .command("repo", repoCommand)
     .command("blueprint", blueprintCommand)
     .command("buildpack", buildpackCommand)
