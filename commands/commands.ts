@@ -1,4 +1,4 @@
-import { Cliffy, CliffyCommand, sortBy } from "../deps.ts";
+import { Cliffy, sortBy } from "../deps.ts";
 import { renderJsonOutput } from "../util/logging.ts";
 import { standardAction, Subcommand } from "./_helpers.ts";
 
@@ -24,9 +24,9 @@ export const commandsCommand =
       return standardAction({
         processing: (logger) => {
           // TODO: some odd typing here. are the Deno imports correct?
-          const rootCommand = this.getGlobalParent() as CliffyCommand;
+          const rootCommand = this.getGlobalParent() as Cliffy.Command;
 
-          function listCommands(cmd: CliffyCommand): CmdTreeNode {
+          function listCommands(cmd: Cliffy.Command): CmdTreeNode {
             if (!cmd) {
               logger.debug("can't happen: command was falsy in 'render commands'?");
               throw new Error();
