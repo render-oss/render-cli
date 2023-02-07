@@ -9,6 +9,9 @@ cache-deps:
 deps:
 	deno cache --lock=deps-lock.json deps.ts
 
+test:
+	deno test --allow-write --allow-read
+
 build-linux-x86_64: deps
 	$(eval OUTFILE ?= render-linux-x86_64)
 	deno compile \
