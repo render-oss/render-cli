@@ -23,6 +23,8 @@ jobs:
       # `-$1-$kernel-$arch`.
       - name: outputting version
         run: ./_build/write-version.bash gha > version.ts
+      - name: running tests
+        run: make test
       - name: compiling executable for x86_64-unknown-linux-gnu
         run: make build-linux-x86_64
       - name: compiling executable for x86_64-apple-darwin
@@ -109,7 +111,7 @@ jobs:
             /tmp/nupkg/*
             LICENSE
             README.md
-  
+
   push-nupkg:
     runs-on: ubuntu-latest
     needs:
@@ -126,4 +128,4 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v2
         with:
           args: push --key ${{ secrets.CHOCOLATEY_APIKEY }} --source https://push.chocolatey.org ./tmp/nupkg/rendercli.nupkg
-  
+

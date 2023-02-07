@@ -22,10 +22,12 @@ export function getPaths(): AppPaths {
 }
 
 
-export async function pathExists(path: string): Promise<boolean> {
+export async function pathExists(
+  path: string,
+): Promise<Deno.FileInfo | false> {
   try {
-    await Deno.stat(path);
-    return true;
+    const ret = await Deno.stat(path);
+    return ret;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
       return false;

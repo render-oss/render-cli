@@ -1,7 +1,8 @@
 import { Subcommand } from "../_helpers.ts";
+import { blueprintFromTemplateCommand } from "./from-template.ts";
 import { blueprintLaunchCommand } from "./launch.ts";
 
-const desc = 
+const desc =
 `Commands for interacting with Render Blueprints (render.yaml files).`;
 
 export const blueprintCommand =
@@ -14,5 +15,6 @@ export const blueprintCommand =
     })
     // .command("new", blueprintNewCommand)
     .command("launch", blueprintLaunchCommand)
+    .command("from-template", blueprintFromTemplateCommand)
     // .command("validate", blueprintValidateCommand)
     ;

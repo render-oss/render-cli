@@ -4,6 +4,7 @@ import { identity } from "../../util/fn.ts";
 import { unwrapAsyncIterator } from "../../util/iter.ts";
 import { getLogger } from "../../util/logging.ts";
 import { pathExists } from "../../util/paths.ts";
+import { findUp } from "../../util/find-up.ts";
 
 export type TemplateNewProjectArgs = {
   identifier: string;
@@ -98,10 +99,8 @@ export async function templateNewProject(args: TemplateNewProjectArgs): Promise<
     console.log("");
     console.log("and you're good to go!");
     console.log("");
-    console.log(Cliffy.colors.brightWhite("Now that you have a new project set up, you'll need to push to GitHub or GitLab"))
-    console.log(`${Cliffy.colors.brightWhite("in order to deploy it to Render")}. Once you've followed the instructions`);
-    console.log(`provided when you create your repo in GitHub or GitLab, you can then run`);
-    console.log(`${Cliffy.colors.cyan("render buildpack launch")} to easily deploy your project to Render.`);
+    console.log(Cliffy.colors.brightWhite("Now that you have a new blueprint set up, you'll need to push it to your repo."))
+    console.log(`Once done, ${Cliffy.colors.cyan("render buildpack launch")} to easily deploy your project to Render.`);
     console.log("");
     console.log("Thanks for using Render, and good luck with your new project!");
   } finally {
@@ -169,6 +168,68 @@ async function downloadRepo(loc: Locator, tempDir: string, outDir: string, force
     }
     default: {
       throw new Error(`unrecognized project provider: ${loc.provider}`);
+    }
+  }
+}
+
+export type WriteExampleBlueprintArgs = {
+  identifier: string;
+  repoDir?: string;
+  skipCleanup?: boolean;
+};
+
+export async function writeExampleBlueprint(
+  args: WriteExampleBlueprintArgs,
+) {
+  const logger = await getLogger();
+
+  const tempDir = await Deno.makeTempDir({ prefix: 'rendercli_' });
+  const userRepoLocation = Path.resolve(args.repoDir ?? Deno.cwd());
+
+  try {
+    logger.debug("Repo diretory:", userRepoLocation);
+    logger.debug(`Attempting to resolve template '${args.identifier}'.`);
+    const locator = resolveTemplateIdentifier(args.identifier);
+
+    logger.debug(`Ensuring repo is a valid Render template: ${Deno.inspect(locator)}`);
+    await ensureRepoIsValid(locator);
+
+
+    logger.debug(`Making sure we're in a git repo from '${userRepoLocation}'...`);
+    const gitDir = await findUp(userRepoLocation, '.git', { searchFor: 'directories' });;
+
+    if (!gitDir) {
+      throw new Error("You must be in a git repository to use this command.");
+    }
+
+    const repoDir = Path.dirname(Path.resolve(gitDir));
+    logger.debug(`Repo dir: ${repoDir}`);
+
+    const renderYamlPath = `${repoDir}/render.yaml`;
+    if (await pathExists(renderYamlPath)) {
+      logger.warning("This repo already has a render.yaml file; we're going to copy it to 'render.yaml.old'.");
+      await Deno.copyFile(renderYamlPath, `${renderYamlPath}.old`);
+    }
+
+    const unzipDir = `${tempDir}/blueprint-source`;
+    await downloadRepo(locator, tempDir, unzipDir, true);
+
+    logger.debug(`Copying '${unzipDir}/render.yaml' to '${renderYamlPath}'...`);
+    await Deno.copyFile(`${unzipDir}/render.yaml`, renderYamlPath);
+
+    console.log(`🎉 Done! 🎉 Your project's now ready to use! Your new ${Cliffy.colors.cyan(locator.repo)} blueprint has been saved to`);
+    console.log("");
+    console.log(Cliffy.colors.brightYellow(renderYamlPath));
+    console.log("");
+    console.log(Cliffy.colors.brightWhite("Please make sure to review the blueprint's contents to make sure they're appropriate for your app!"));
+    console.log("");
+    console.log(Cliffy.colors.brightWhite("Now that you have a new blueprint set up, you'll need to push it to your repo."))
+    console.log(`Once done, ${Cliffy.colors.cyan("render buildpack launch")} to easily deploy your project to Render.`);
+    console.log("");
+    console.log("Thanks for using Render, and good luck with your new project!");
+  } finally {
+    if (!args.skipCleanup) {
+      await Deno.remove(tempDir, { recursive: true });
     }
   }
 }
