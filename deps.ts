@@ -1,5 +1,6 @@
 export {
   assertEquals,
+  assertThrows,
 } from 'https://deno.land/std@0.151.0/testing/asserts.ts';;
 export * as Path from "https://deno.land/std@0.151.0/path/mod.ts";
 export * as FS from "https://deno.land/std@0.151.0/fs/mod.ts";

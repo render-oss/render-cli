@@ -10,7 +10,7 @@ deps:
 	deno cache --lock=deps-lock.json deps.ts
 
 test:
-	deno test --allow-write --allow-read
+	deno test --allow-write --allow-read --allow-net --allow-env --allow-run
 
 build-linux-x86_64: deps
 	$(eval OUTFILE ?= render-linux-x86_64)

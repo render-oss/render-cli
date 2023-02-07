@@ -50,4 +50,6 @@ Deno.test('findUp', async (t) => {
     const ret = await findUp(`${root}/a/b/c/d/e`, 'does-not-exist');
     assertEquals(ret, null);
   });
+
+  Deno.remove(root, { recursive: true });
 });
