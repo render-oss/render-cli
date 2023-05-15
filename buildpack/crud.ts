@@ -4,7 +4,7 @@ import { pathExists } from "../util/paths.ts";
 import { DOCKERFILE_TEMPLATE } from "./templates/dockerfile_template.ts";
 import { RenderBuildpackFile } from "./types.ts";
 
-const BUILDPACKS_VALIDATOR = ajv.compile<RenderBuildpackFile>(RenderBuildpackFile);
+const BUILDPACKS_VALIDATOR = ajv.compile(RenderBuildpackFile);
 
 export async function initDockerfile(dir: string, force: boolean) {
   const f = `${dir}/Dockerfile.render`;

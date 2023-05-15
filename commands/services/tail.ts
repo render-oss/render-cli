@@ -66,7 +66,7 @@ export const servicesTailCommand =
           throw err;
         }
   
-        const logEntryValidator = ajv.compile<LogTailEntry>(LogTailEntry);
+        const logEntryValidator = ajv.compile(LogTailEntry);
   
   
         setInterval(() => {

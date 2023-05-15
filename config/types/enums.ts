@@ -14,7 +14,7 @@ export type Region = Static<typeof Region>;
 export const ALL_REGIONS = Region.anyOf.map(i => i.const);
 
 export function assertValidRegion(s: string): asserts s is Region {
-  if (!ajv.validate<Region>(Region, s)) {
+  if (!ajv.validate(Region, s)) {
     throw new Error(`Region '${s}' is not one of: ${ALL_REGIONS.join(' ')}`);
   }
 }

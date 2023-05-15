@@ -118,9 +118,9 @@ async function buildRuntimeProfile(
 }
 
 export function validateRegion(s: string): Region {
-  if (!ajv.validate<Region>(Region, s)) {
+  if (!ajv.validate(Region, s)) {
     throw new Error(`Invalid region '${s}'. Valid regions: ${ALL_REGIONS.join(' ')}`);
   }
 
-  return s;
+  return s as Region;
 }
