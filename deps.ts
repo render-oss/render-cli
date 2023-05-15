@@ -10,10 +10,10 @@ export {
   sortBy
 } from "https://raw.githubusercontent.com/lodash/lodash/4.17.21-es/lodash.js";
 
-export { Type, type Static } from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
-export * as Typebox from "https://deno.land/x/typebox@0.24.27/src/typebox.ts";
+export { Type, type Static } from "https://deno.land/x/typebox@0.28.10/src/typebox.ts";
+export * as Typebox from "https://deno.land/x/typebox@0.28.10/src/typebox.ts";
 
-export { default as Ajv, type ErrorObject as AjvErrorObject } from "https://esm.sh/v86/ajv@8.11.0";
+export { default as Ajv } from "https://esm.sh/v86/ajv@8.11.0";
 export { default as AjvFormats } from "https://esm.sh/v86/ajv-formats@2.1.1";
 
 export * as Cliffy from "https://deno.land/x/cliffy@v0.25.6/mod.ts";

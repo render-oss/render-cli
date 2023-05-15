@@ -47,7 +47,7 @@ export class ValidationFailed extends RenderCLIError {
     super(
       `Error validating object of type ${schema.title ?? schema.$id ?? 'unknown'}: ` +
       "\n\n" + 
-      (errors ?? []).map(error => ajv.errorsText([error])).join("\n")
+      (errors ?? []).map((error:any) => ajv.errorsText([error])).join("\n")
     );
   }
 }

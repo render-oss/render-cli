@@ -35,7 +35,7 @@ export function logAjvErrors(logger: Log.Logger, errors: typeof ajv.errors) {
 }
 
 export function assertType<T extends Typebox.TSchema>(schema: T, content: unknown): asserts content is Typebox.Static<T> {
-  const isValid = ajv.validate<T>(schema, content);
+  const isValid = ajv.validate(schema, content);
   if (!isValid) {
     throw new ValidationFailed(schema, ajv.errors);
   }
