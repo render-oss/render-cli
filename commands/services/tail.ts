@@ -87,9 +87,10 @@ export const servicesTailCommand =
             json = (new TextDecoder()).decode(input);
           }
   
-          const msg = JSON.parse(json);
+          const rawMsg = JSON.parse(json);
           
-          if (logEntryValidator(msg)) {
+          if (logEntryValidator(rawMsg)) {
+            const msg = rawMsg as {deployID: string; text: string}
             if (deployIds && !deployIds.has(msg.deployID)) {
               continue;
             }
