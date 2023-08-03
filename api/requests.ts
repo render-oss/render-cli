@@ -60,7 +60,7 @@ function requestRaw(
 
     const url = `https://${apiHost(cfg)}/v1${path}?${queryStringify(query)}`;
 
-    logger.debug(`api dispatch: ${reqNumber}: url ${url} (query: ${JSON.stringify(query)})`);
+    logger.debug(`api dispatch: ${reqNumber}: method: ${method} url ${url} (query: ${JSON.stringify(query)})`);
 
     const response = await fetch(url, {
       headers: {
@@ -68,6 +68,7 @@ function requestRaw(
         'user-agent': `Render CLI/${VERSION}`,
         accept: 'application/json',
       },
+      method: method,
     });
     if (!response.ok) {
       // this kind of has to be a DOMException because it encapsulates the notion of NetworkError
