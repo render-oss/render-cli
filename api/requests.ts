@@ -12,13 +12,43 @@ function queryStringify(query: Record<string, any>) {
   });
 }
 
+type httpMethod =
+  | "GET"
+  | "HEAD"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "CONNECT"
+  | "OPTIONS"
+  | "TRACE"
+  | "PATCH";
+
 let apiReqCount = 0;
 
 export function getRequestRaw(
   logger: Log.Logger,
   cfg: RuntimeConfiguration,
   path: string,
+  query: Record<string, any> = {}
+): Promise<Response> {
+  return requestRaw(logger, cfg, path, query, "GET");
+}
+
+export function deleteRequestRaw(
+  logger: Log.Logger,
+  cfg: RuntimeConfiguration,
+  path: string,
+  query: Record<string, any> = {}
+): Promise<Response> {
+  return requestRaw(logger, cfg, path, query, "DELETE");
+}
+
+function requestRaw(
+  logger: Log.Logger,
+  cfg: RuntimeConfiguration,
+  path: string,
   query: Record<string, any> = {},
+  method: httpMethod = "GET"
 ): Promise<Response> {
   return handleApiErrors(logger, async () => {
     const reqNumber = apiReqCount++;
