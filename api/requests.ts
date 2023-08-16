@@ -12,13 +12,43 @@ function queryStringify(query: Record<string, any>) {
   });
 }
 
+type httpMethod =
+  | "GET"
+  | "HEAD"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "CONNECT"
+  | "OPTIONS"
+  | "TRACE"
+  | "PATCH";
+
 let apiReqCount = 0;
 
 export function getRequestRaw(
   logger: Log.Logger,
   cfg: RuntimeConfiguration,
   path: string,
+  query: Record<string, any> = {}
+): Promise<Response> {
+  return requestRaw(logger, cfg, path, query, "GET");
+}
+
+export function deleteRequestRaw(
+  logger: Log.Logger,
+  cfg: RuntimeConfiguration,
+  path: string,
+  query: Record<string, any> = {}
+): Promise<Response> {
+  return requestRaw(logger, cfg, path, query, "DELETE");
+}
+
+function requestRaw(
+  logger: Log.Logger,
+  cfg: RuntimeConfiguration,
+  path: string,
   query: Record<string, any> = {},
+  method: httpMethod = "GET"
 ): Promise<Response> {
   return handleApiErrors(logger, async () => {
     const reqNumber = apiReqCount++;
@@ -30,7 +60,7 @@ export function getRequestRaw(
 
     const url = `https://${apiHost(cfg)}/v1${path}?${queryStringify(query)}`;
 
-    logger.debug(`api dispatch: ${reqNumber}: url ${url} (query: ${JSON.stringify(query)})`);
+    logger.debug(`api dispatch: ${reqNumber}: method: ${method} url ${url} (query: ${JSON.stringify(query)})`);
 
     const response = await fetch(url, {
       headers: {
@@ -38,6 +68,7 @@ export function getRequestRaw(
         'user-agent': `Render CLI/${VERSION}`,
         accept: 'application/json',
       },
+      method: method,
     });
     if (!response.ok) {
       // this kind of has to be a DOMException because it encapsulates the notion of NetworkError
