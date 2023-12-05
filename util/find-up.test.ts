@@ -51,5 +51,5 @@ Deno.test('findUp', async (t) => {
     assertEquals(ret, null);
   });
 
-  Deno.remove(root, { recursive: true });
+  await Deno.remove(root, { recursive: true });
 });
