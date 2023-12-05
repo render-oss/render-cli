@@ -59,7 +59,7 @@ export const servicesTailCommand =
         let writer: WritableStreamDefaultWriter<string | Uint8Array>;
   
         try {
-          if(stream.connection) {
+          if (stream.connection) {
             conn = await stream.connection;
           } else {
             conn = await stream.opened;
