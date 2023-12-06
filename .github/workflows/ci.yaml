@@ -129,3 +129,5 @@ jobs:
         with:
           args: push --key ${{ secrets.CHOCOLATEY_APIKEY }} --source https://push.chocolatey.org ./tmp/nupkg/rendercli.nupkg
 
+permissions:
+  contents: write
