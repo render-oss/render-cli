@@ -7,12 +7,12 @@ import { getPaths } from "../../util/paths.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 import { requestProfileInfo, writeProfile } from "./_shared.ts";
 
-const desc = 
+const desc =
 `Adds a new profile to a Render CLI config file.`;
 
 export const configAddProfileCommand =
   new Subcommand()
-    .name('init')
+    .name('add-profile')
     .description(desc)
     .option("-f, --force", "overwrites existing profile if found.")
     .arguments("<profileName:string>")

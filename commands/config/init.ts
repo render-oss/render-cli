@@ -1,3 +1,4 @@
+import { FALLBACK_CONFIG } from "../../config/index.ts";
 import { ConfigLatest } from "../../config/types/index.ts";
 import { Cliffy, Log, YAML } from "../../deps.ts";
 import { ForceRequiredError } from "../../errors.ts";
@@ -6,7 +7,7 @@ import { getPaths } from "../../util/paths.ts";
 import { standardAction, Subcommand } from "../_helpers.ts";
 import { chmodConfigIfPossible, requestProfileInfo, writeProfile } from "./_shared.ts";
 
-const desc = 
+const desc =
 `Interactively creates a Render CLI config file.`;
 
 export const configInitCommand =
@@ -39,7 +40,7 @@ export const configInitCommand =
         ]);
 
         const cfg: ConfigLatest = {
-          version: 1,
+          version: FALLBACK_CONFIG.version,
           sshPreserveHosts,
           profiles: {
             default: defaultProfile,
