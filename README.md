@@ -1,7 +1,7 @@
 # render-cli (deprecated) #
 
 > [!WARNING]  
-> **This CLI is deprecated and no longer under active development. We recommend using our newer [actively-maintained CLI](https://github.com/render-oss/render-cli-alpha) instead.**
+> **This CLI is deprecated and no longer under active development. We recommend using our newer [actively-maintained CLI](https://github.com/render-oss/cli) instead.**
 
 ## Getting render-cli ##
 ### The easy way: getting releases ###
